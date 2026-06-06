@@ -15,8 +15,26 @@ dependencies = [
     "jinja2>=3.1.0",
     "pyyaml>=6.0.3",
 ]
-requires-python = "==3.14.*"
+requires-python = ">=3.12"
 license = {text = "MIT"}
+readme = "README.md"
+keywords = ["pydantic", "markdown", "agents", "llm", "validation", "agentic", "templates", "parsing"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/730alchemy/archetype"
+Source = "https://github.com/730alchemy/archetype"
+"Bug Tracker" = "https://github.com/730alchemy/archetype/issues"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -52,7 +70,7 @@ dev = [
 ]
 
 [tool.ruff]
-target-version = "py314"
+target-version = "py312"
 line-length = 100
 src = ["src"]
 
@@ -75,7 +93,7 @@ select = [
 quote-style = "double"
 
 [tool.pyright]
-pythonVersion = "3.14"
+pythonVersion = "3.12"
 pythonPlatform = "Linux"
 venvPath = "."
 venv = ".venv"
