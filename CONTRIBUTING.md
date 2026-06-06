@@ -17,8 +17,9 @@ pdm install
 ## Commands
 
 ```bash
-pdm run test       # run tests
-pdm run lint       # lint and autofix
-pdm run typecheck  # run Pyright
-pdm run format     # format
+pdm run test          # run tests with coverage report
+pdm run view-coverage # open HTML coverage report in browser
+pdm run lint          # lint and autofix
+pdm run typecheck     # run Pyright
+pdm run format        # format
 ```
