@@ -20,7 +20,7 @@ Archetype makes the Pydantic model the contract at every agent boundary. At boun
 ## Installation
 
 ```bash
-pip install archetype @ git+https://github.com/730alchemy/archetype.git@v0.1.0
+pip install archetype-md
 ```
 
 ## Quickstart
