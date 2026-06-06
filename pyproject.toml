@@ -39,7 +39,7 @@ Source = "https://github.com/730alchemy/archetype"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src", "."]
-addopts = "-n 16 --cov=archetype --cov-report=term-missing --cov-report=xml"
+addopts = "-n 16 --cov=archetype --cov-report=term-missing --cov-report=xml:reports/coverage.xml --cov-report=html:reports/htmlcov"
 asyncio_mode = "strict"
 
 
@@ -53,13 +53,10 @@ package-dir = "src"
 [tool.pdm.scripts]
 post_install.cmd = "pre-commit install"
 test.cmd = "pytest tests/"
-test.env = {PYTHONPATH = "src"}
 lint.cmd = "ruff check --fix src/ tests/"
-lint.env = {PYTHONPATH = "src"}
 format.cmd = "ruff format src/ tests/"
-format.env = {PYTHONPATH = "src"}
 typecheck.cmd = "pyright"
-typecheck.env = {PYTHONPATH = "src"}
+view-coverage.cmd = "xdg-open reports/htmlcov/index.html"
 
 [dependency-groups]
 dev = [
