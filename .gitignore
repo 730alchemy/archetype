@@ -1,11 +1,30 @@
+# Python
 *.py[codz]
 __pycache__/
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
+
+# PDM
 .pdm-python
-.env
+__pypackages__/
+
+# Virtual environment
+.venv/
+
+# Build
 build/
 dist/
 *.egg-info/
-.venv/
+
+# Tools
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Test
+.coverage
+htmlcov/
+
+# Environment
+.env
+
+# OS
+.DS_Store
