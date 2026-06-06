@@ -3,7 +3,7 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [project]
-name = "archetype"
+name = "archetype-md"
 version = "0.1.0"
 description = "Pydantic as source of truth for agentic systems"
 authors = [
