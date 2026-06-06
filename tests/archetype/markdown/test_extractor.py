@@ -52,8 +52,9 @@ class TestExtractAndValidate:
     validate it against the Finding model."""
 
     def test_extract_finding_then_validate(self):
-        from archetype.markdown.parser import validate_markdown
         from tests.archetype.markdown.fixtures.sample_models import Finding
+
+        from archetype.markdown.parser import validate_markdown
 
         md = (
             "# Review\n\n"

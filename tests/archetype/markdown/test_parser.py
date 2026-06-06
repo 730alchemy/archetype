@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 import pytest
-
-from archetype.markdown.errors import MarkdownValidationError
-from archetype.markdown.parser import validate_markdown
-from archetype.markdown.renderer import render_instance
 from tests.archetype.markdown.fixtures.sample_models import (
     Finding,
     HeaderWithSummary,
     ReviewerMetadata,
     ReviewerOutput,
 )
+
+from archetype.markdown.errors import MarkdownValidationError
+from archetype.markdown.parser import validate_markdown
+from archetype.markdown.renderer import render_instance
 
 
 class TestValidateMarkdown:

@@ -6,6 +6,13 @@ from typing import Annotated
 
 import pytest
 from pydantic import BaseModel
+from tests.archetype.markdown.fixtures.sample_models import (
+    Finding,
+    HeaderWithSummary,
+    ReviewerMetadata,
+    ReviewerOutput,
+    SimpleHeader,
+)
 
 from archetype.markdown.annotations import (
     AsBulletList,
@@ -17,13 +24,6 @@ from archetype.markdown.annotations import (
 from archetype.markdown.errors import MarkdownTemplateError
 from archetype.markdown.renderer import render_instance, render_template
 from archetype.markdown.template_model import MarkdownHeader
-from tests.archetype.markdown.fixtures.sample_models import (
-    Finding,
-    HeaderWithSummary,
-    ReviewerMetadata,
-    ReviewerOutput,
-    SimpleHeader,
-)
 
 
 class TestRenderTemplateSimpleHeader:

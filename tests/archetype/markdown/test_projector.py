@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 import pytest
-
-from archetype.markdown._ast_normalizer import normalize
-from archetype.markdown._projector import project_to_model
-from archetype.markdown.errors import MarkdownValidationError
 from tests.archetype.markdown.fixtures.sample_models import (
     HeaderWithSummary,
     SimpleHeader,
 )
+
+from archetype.markdown._ast_normalizer import normalize
+from archetype.markdown._projector import project_to_model
+from archetype.markdown.errors import MarkdownValidationError
 
 
 class TestProjectToModelSimple:

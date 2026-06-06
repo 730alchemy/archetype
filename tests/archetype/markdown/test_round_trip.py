@@ -4,10 +4,6 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from archetype.markdown.annotations import AsHeading
-from archetype.markdown.parser import validate_markdown
-from archetype.markdown.renderer import render_instance
-from archetype.markdown.template_model import MarkdownHeader
 from tests.archetype.markdown.fixtures.sample_models import (
     Finding,
     HeaderWithSummary,
@@ -15,6 +11,11 @@ from tests.archetype.markdown.fixtures.sample_models import (
     ReviewerOutput,
     SimpleHeader,
 )
+
+from archetype.markdown.annotations import AsHeading
+from archetype.markdown.parser import validate_markdown
+from archetype.markdown.renderer import render_instance
+from archetype.markdown.template_model import MarkdownHeader
 
 
 class TestRoundTrip:
