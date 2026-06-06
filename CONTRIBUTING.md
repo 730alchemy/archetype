@@ -4,10 +4,9 @@
 
 ```bash
 pdm install
-pre-commit install
 ```
 
-`pdm install` installs all dependencies. `pre-commit install` registers the git hooks — ruff and pyright will run automatically on every commit.
+`pdm install` installs all dependencies and automatically registers the pre-commit hooks via a post-install script. You don't need to run `pre-commit install` manually. Ruff and Pyright will run automatically on every commit.
 
 ## Workflow
 

@@ -32,6 +32,7 @@ distribution = true
 package-dir = "src"
 
 [tool.pdm.scripts]
+post_install.cmd = "pre-commit install"
 test.cmd = "pytest tests/"
 test.env = {PYTHONPATH = "src"}
 lint.cmd = "ruff check --fix src/ tests/"
