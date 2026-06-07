@@ -1,16 +1,16 @@
 # Archetype
 
-Type safety for agents and agentic systems.
+Type-safe markdown at every agent boundary.
 
-Archetype gives you the tools — backed by Pydantic models — to validate data at agent boundaries and guide agent behavior. In agentic systems, structured data moves between agents as LLM-generated markdown — patient assessments, contract analyses, audit findings, software designs. Because this data is generated and non-deterministic, producers and consumers diverge silently: a required section gets dropped, a heading gets renamed, a field comes back in the wrong format. The failure surfaces and nothing catches it, so the error propagates through the system silently.
+Archetype gives you the tools — backed by Pydantic models — to validate data at agent boundaries and guide agent behavior. In agentic systems, structured data moves between agents as LLM-generated markdown — patient assessments, contract analyses, audit findings, software designs. Because this data is generated and non-deterministic, producers and consumers diverge silently: a required section gets dropped, a heading gets renamed, a field comes back in the wrong format. Nothing catches it, so the error propagates through the system.
 
-Archetype makes the Pydantic model the contract at every agent boundary. At boundaries, it injects markdown format specifications into the agent and validates markdown files the agent generates. Inside agents, field descriptions from the model provide semantic context in instructions and prompts. One change to the Pydantic model propagates to every touchpoint of the corresponding markdown file.
+Archetype makes the Pydantic model the contract at every agent boundary. At boundaries, it injects the markdown contract into agent instructions and validates markdown the agent generates. Inside agents, field descriptions from the model provide semantic context in prompts. One change to the Pydantic model propagates to every touchpoint of the corresponding markdown file.
 
 ## Capabilities
 
 | Capability | Description |
 |---|---|
-| **Template generation** | Embed markdown format specifications into any text an agent reads: instructions, prompts, skills, etc. |
+| **Contract generation** | Embed markdown contracts into any text an agent reads: instructions, prompts, skills, etc. |
 | **Markdown parsing and validation** | Validate agent-generated markdown against the model — missing sections, misnamed fields, and type mismatches surface as errors you can prompt the agent to correct. |
 | **Annotation-driven layout** | Declare how each field renders — as a heading, code block, list, or table — directly on the model. No separate template files or format strings. |
 | **Structural validation at class definition** | Markdown modeling errors are caught at definition time, not mid-run. |
@@ -38,8 +38,8 @@ class Review(MarkdownDocument):
     summary: Annotated[str, AsHeading()]
     findings: list[Finding]
 
-# Generate a blank template (e.g. to hand to an LLM)
-template = generate_contract(Review)
+# Generate the markdown contract to embed in an agent instruction
+contract = generate_contract(Review)
 
 # Parse markdown back into a validated model instance
 review = validate_markdown(produced_markdown, Review)
@@ -48,7 +48,7 @@ review = validate_markdown(produced_markdown, Review)
 output = render_instance(review)
 ```
 
-Archetype produces and consumes markdown like this:
+A populated document — what `render_instance` produces and `validate_markdown` consumes — looks like this:
 
 ```markdown
 # Q4 Code Review
@@ -90,10 +90,10 @@ Typed markdown documents backed by Pydantic models.
 |--------|---------|
 | `MarkdownDocument` | Base class for top-level documents (adds optional YAML frontmatter) |
 | `MarkdownHeader` | Base class for heading-shaped sub-documents |
-| `generate_contract(cls)` | Emit an annotated skeleton with placeholder comments |
+| `generate_contract(cls)` | Generate the markdown contract — annotated structure with placeholder comments and inline field descriptions |
 | `render_instance(obj)` | Render a populated instance to markdown |
 | `validate_markdown(text, cls)` | Parse markdown and return a validated instance |
-| `template_fields(cls)` | Iterate `FieldInfo` entries for use in Jinja templates |
+| `template_fields(cls)` | Return heading text and description for each heading-shaped field; non-heading fields are skipped |
 | `extract_subtree(text, heading)` | Extract a named section from markdown text |
 
 **Field annotations** (attached via `Annotated[T, ...]`):
