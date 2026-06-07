@@ -72,7 +72,7 @@ class TestExtractAndValidate:
         )
         fragment = extract_subtree(md, heading_level=3, title_match="Finding 1 - missing tests")
         finding = validate_markdown(fragment, Finding)
-        assert finding.title == "missing tests"
+        assert finding.heading == "missing tests"
         assert finding.code.strip() == "x = 1"
         assert finding.tags == ["t1", "t2"]
         assert "No tests" in finding.description

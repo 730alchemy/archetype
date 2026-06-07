@@ -17,21 +17,21 @@ from archetype.markdown.renderer import render_instance
 
 class TestValidateMarkdown:
     def test_simple_header_with_summary_round_trip(self):
-        original = HeaderWithSummary(title="Doc", summary="The work is good.")
+        original = HeaderWithSummary(heading="Doc", summary="The work is good.")
         rendered = render_instance(original)
         parsed = validate_markdown(rendered, HeaderWithSummary)
-        assert parsed.title == "Doc"
+        assert parsed.heading == "Doc"
         assert "The work is good." in parsed.summary
 
     def test_full_reviewer_output_round_trip(self):
         original = ReviewerOutput(
-            title="Review of cs7-plan4",
+            heading="Review of cs7-plan4",
             frontmatter=ReviewerMetadata(change_set_name="cs7", commit_range="abc..def"),
             next_steps=["A", "B"],
             summary="Looks good.",
             findings=[
                 Finding(
-                    title="t1",
+                    heading="t1",
                     code="x = 1",
                     tags=["x"],
                     description="d",
@@ -41,12 +41,12 @@ class TestValidateMarkdown:
         )
         rendered = render_instance(original)
         parsed = validate_markdown(rendered, ReviewerOutput)
-        assert parsed.title == "Review of cs7-plan4"
+        assert parsed.heading == "Review of cs7-plan4"
         assert parsed.frontmatter is not None
         assert parsed.frontmatter.change_set_name == "cs7"
         assert parsed.next_steps == ["A", "B"]
         assert len(parsed.findings) == 1
-        assert parsed.findings[0].title == "t1"
+        assert parsed.findings[0].heading == "t1"
 
     def test_invalid_markdown_raises_validation_error(self):
         with pytest.raises(MarkdownValidationError):

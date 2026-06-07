@@ -20,19 +20,19 @@ from archetype.markdown.template_model import MarkdownHeader
 
 class TestRoundTrip:
     def test_simple_header(self):
-        original = SimpleHeader(title="hello world")
+        original = SimpleHeader(heading="hello world")
         recovered = validate_markdown(render_instance(original), SimpleHeader)
         assert recovered == original
 
     def test_header_with_summary(self):
-        original = HeaderWithSummary(title="doc title", summary="The body content here.")
+        original = HeaderWithSummary(heading="doc title", summary="The body content here.")
         recovered = validate_markdown(render_instance(original), HeaderWithSummary)
-        assert recovered.title == original.title
+        assert recovered.heading == original.heading
         assert original.summary in recovered.summary  # serialization may add whitespace
 
     def test_finding(self):
         original = Finding(
-            title="missing tests",
+            heading="missing tests",
             code="def foo(): pass",
             tags=["a", "b"],
             description="No tests.",
@@ -48,7 +48,7 @@ class TestRoundTrip:
             rendered, heading_level=3, title_match="Finding 1 - missing tests"
         )
         recovered = validate_markdown(fragment, Finding)
-        assert recovered.title == "missing tests"
+        assert recovered.heading == "missing tests"
         assert recovered.code.strip() == "def foo(): pass"
         assert recovered.tags == ["a", "b"]
         assert "No tests" in recovered.description
@@ -56,35 +56,35 @@ class TestRoundTrip:
 
     def test_full_reviewer_output(self):
         original = ReviewerOutput(
-            title="Review of foo",
+            heading="Review of foo",
             frontmatter=ReviewerMetadata(change_set_name="x", commit_range="a..b"),
             next_steps=["s1", "s2"],
             summary="Clean.",
             findings=[
-                Finding(title="t1", code="c", tags=["x"], description="d", rationale="r"),
-                Finding(title="t2", code="c2", tags=[], description="d2", rationale="r2"),
+                Finding(heading="t1", code="c", tags=["x"], description="d", rationale="r"),
+                Finding(heading="t2", code="c2", tags=[], description="d2", rationale="r2"),
             ],
         )
         recovered = validate_markdown(render_instance(original), ReviewerOutput)
-        assert recovered.title == original.title
+        assert recovered.heading == original.heading
         assert recovered.frontmatter == original.frontmatter
         assert recovered.next_steps == original.next_steps
         assert original.summary in recovered.summary
         assert len(recovered.findings) == 2
-        assert recovered.findings[0].title == "t1"
-        assert recovered.findings[1].title == "t2"
+        assert recovered.findings[0].heading == "t1"
+        assert recovered.findings[1].heading == "t2"
 
     def test_empty_findings_list_round_trips(self):
         """A reviewer document with zero findings should round-trip cleanly."""
         original = ReviewerOutput(
-            title="Empty review",
+            heading="Empty review",
             next_steps=[],
             summary="Nothing to report.",
             findings=[],
         )
         recovered = validate_markdown(render_instance(original), ReviewerOutput)
         assert recovered.findings == []
-        assert recovered.title == "Empty review"
+        assert recovered.heading == "Empty review"
 
     def test_as_heading_body_with_sub_heading_round_trips(self):
         """An AsHeading-on-str body field whose value contains a sub-heading
@@ -94,7 +94,7 @@ class TestRoundTrip:
             details: Annotated[str, AsHeading()]
 
         original = WithStructuredBody(
-            title="Doc",
+            heading="Doc",
             details="## Sub-section\n\nNested content here.",
         )
         rendered = render_instance(original)
@@ -112,7 +112,7 @@ class TestRoundTrip:
             details: Annotated[str, AsHeading()]
 
         original = WithDeepBody(
-            title="Doc",
+            heading="Doc",
             details="## Sub-section\n\n### Sub-sub-section\n\nDeep content.",
         )
         rendered = render_instance(original)

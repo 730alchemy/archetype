@@ -58,7 +58,7 @@ def template_fields(model_class: type[MarkdownHeader]) -> list[FieldInfo]:
 
     result: list[FieldInfo] = []
     for name, field in model_class.model_fields.items():
-        if name in ("title", "frontmatter"):
+        if name in ("heading", "frontmatter"):
             continue
 
         heading = _resolve_heading(model_class, name, field)
@@ -81,21 +81,21 @@ def _resolve_heading(model_class: type[MarkdownHeader], field_name: str, field: 
     # Shape 2: field typed as a MarkdownHeader subclass → subclass's title default.
     field_type = getattr(field, "annotation", None)
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
-        title_field = field_type.model_fields.get("title")
+        title_field = field_type.model_fields.get("heading")
         if title_field is None or title_field.default is PydanticUndefined:
             raise ValueError(
                 f"{model_class.__name__}.{field_name} is typed as "
                 f"{field_type.__name__}, which has no default value for its "
-                f"`title` field. template_fields() derives the heading from "
-                f"the subclass's title default; give {field_type.__name__}.title "
-                f'a default (e.g. `title: str = "Section Name"`), or use '
+                f"`heading` field. template_fields() derives the heading from "
+                f"the subclass's heading default; give {field_type.__name__}.heading "
+                f'a default (e.g. `heading: str = "Section Name"`), or use '
                 f"Annotated[str, AsHeading()] instead."
             )
         default = title_field.default
         if not isinstance(default, str):
             raise ValueError(
                 f"{model_class.__name__}.{field_name}: "
-                f"{field_type.__name__}.title default is {default!r}, "
+                f"{field_type.__name__}.heading default is {default!r}, "
                 f"expected a string."
             )
         return default
@@ -105,6 +105,6 @@ def _resolve_heading(model_class: type[MarkdownHeader], field_name: str, field: 
         f"{model_class.__name__}.{field_name} has a field shape "
         f"template_fields() does not support. Supported shapes are "
         f"Annotated[str, AsHeading()] and fields typed as a MarkdownHeader "
-        f"subclass with a `title` default. Got annotation={annotation!r}, "
+        f"subclass with a `heading` default. Got annotation={annotation!r}, "
         f"type={field_type!r}."
     )

@@ -46,30 +46,30 @@ def validate_template_class(cls: type[MarkdownHeader]) -> None:
 
 
 def _check_title_rule(cls: type[MarkdownHeader]) -> None:
-    """Title field must exist and be of type str."""
+    """Heading field must exist and be of type str."""
     fields = cls.model_fields
-    if "title" not in fields:
+    if "heading" not in fields:
         raise MarkdownTemplateError(
-            f"{cls.__name__} is missing required 'title' field. "
-            f"All MarkdownHeader subclasses inherit title:str; do not delete it."
+            f"{cls.__name__} is missing required 'heading' field. "
+            f"All MarkdownHeader subclasses inherit heading:str; do not delete it."
         )
-    title_field = fields["title"]
+    title_field = fields["heading"]
     if title_field.annotation is not str:
         raise MarkdownTemplateError(
-            f"{cls.__name__}.title has type {title_field.annotation!r}, "
-            f"expected str. The title field must remain a str (you may attach "
+            f"{cls.__name__}.heading has type {title_field.annotation!r}, "
+            f"expected str. The heading field must remain a str (you may attach "
             f"annotations like TextTemplate via Annotated[str, TextTemplate(...)])."
         )
 
 
 def _check_body_order_rule(cls: type[MarkdownHeader]) -> None:
-    """Within the body (every field except 'title' and 'frontmatter'),
+    """Within the body (every field except 'heading' and 'frontmatter'),
     non-heading fields must precede heading-introducing fields."""
 
     seen_heading = False
     seen_heading_name: str | None = None
     for name, field in cls.model_fields.items():
-        if name in ("title", "frontmatter"):
+        if name in ("heading", "frontmatter"):
             continue
         is_heading = _is_heading_introducing(field)
         if is_heading:
@@ -154,7 +154,7 @@ def _check_type_compatibility_rule(cls: type[MarkdownHeader]) -> None:
     and the allowed type.
     """
     for name, field in cls.model_fields.items():
-        if name in ("title", "frontmatter"):
+        if name in ("heading", "frontmatter"):
             continue
         ann = get_role_annotation(field)
         field_type = field.annotation
@@ -192,7 +192,7 @@ def _enforce_compat(cls: type, field_name: str, ann: object | None, field_type: 
             cls,
             field_name,
             "TextTemplate",
-            "MarkdownHeader.title (str) or list[MarkdownHeader-subclass]",
+            "MarkdownHeader.heading (str) or list[MarkdownHeader-subclass]",
             field_type,
         )
 

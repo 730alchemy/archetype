@@ -23,7 +23,7 @@ class MarkdownHeader(BaseModel):
     fields) is enforced by the meta-validator.
     """
 
-    title: str
+    heading: str
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:

@@ -112,7 +112,7 @@ class TestRenderHeadingIntroducingFields:
 
 class TestRenderInstance:
     def test_simple_header_with_summary(self):
-        h = HeaderWithSummary(title="My Doc", summary="The work is good.")
+        h = HeaderWithSummary(heading="My Doc", summary="The work is good.")
         out = render_instance(h)
         assert out.startswith("# My Doc")
         assert "## Summary" in out
@@ -120,7 +120,7 @@ class TestRenderInstance:
 
     def test_finding_uses_text_template(self):
         f = Finding(
-            title="missing tests",
+            heading="missing tests",
             code="def foo(): pass",
             tags=["test", "coverage"],
             description="No unit tests exist.",
@@ -135,13 +135,13 @@ class TestRenderInstance:
 
     def test_full_reviewer_output_with_frontmatter(self):
         review = ReviewerOutput(
-            title="Review of cs7-plan4",
+            heading="Review of cs7-plan4",
             frontmatter=ReviewerMetadata(change_set_name="cs7", commit_range="abc..def"),
             next_steps=["A", "B"],
             summary="Looks good.",
             findings=[
                 Finding(
-                    title="t1",
+                    heading="t1",
                     code="x",
                     tags=[],
                     description="d",
