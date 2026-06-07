@@ -202,6 +202,17 @@ class TestRenderTemplateInlineDescriptions:
         out = render_template(Doc)
         assert "<!-- Ordered remediation steps. -->" in out
 
+    def test_as_table_with_description_emits_description_comment(self):
+        class Row(BaseModel):
+            path: str
+            severity: str
+
+        class Doc(MarkdownHeader):
+            findings: Annotated[list[Row], AsTable()] = Field(description="One row per finding.")
+
+        out = render_template(Doc)
+        assert "<!-- One row per finding. -->" in out
+
     def test_description_appears_before_placeholder(self):
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()] = Field(description="Overview.")
