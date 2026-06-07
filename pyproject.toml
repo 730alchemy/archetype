@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "archetype-md"
-version = "0.1.1"
+dynamic = ["version"]
 description = "Typed markdown documents backed by Pydantic models"
 authors = [
     {name = "Mark Norman", email = "mark@marknorman.com"},
@@ -49,6 +49,10 @@ distribution = true
 
 [tool.pdm.build]
 package-dir = "src"
+
+[tool.pdm.version]
+source = "scm"
+fallback_version = "0.0.0"
 
 [tool.pdm.scripts]
 post_install.cmd = "pre-commit install"
