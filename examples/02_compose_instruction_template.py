@@ -3,7 +3,7 @@
 resolve() renders a Jinja template against a context. Two globals are
 available inside every template:
 
-  - generate_contract(ModelClass)  — the full annotated markdown skeleton
+  - generate_contract(ModelClass)  — the markdown contract string
   - template_fields(ModelClass)  — per-section heading and description metadata
 
 template_fields() only works on models whose body fields are all AsHeading
@@ -98,7 +98,7 @@ Pay close attention to the intent of each section:
 
 console.print(
     "\n[bold]Composing a markdown contract into an agent instruction template[/bold]\n\n"
-    "[dim]Step 1:[/dim] Declare a Pydantic model for the shape of a markdown document.\n"
+    "[dim]Step 1:[/dim] Declare a Pydantic model that defines the markdown contract.\n"
     "[dim]Step 2:[/dim] Declare a guidance model — all [cyan]AsHeading[/cyan] fields — so"
     " [cyan]template_fields()[/cyan] can inject per-section semantic context.\n"
     "[dim]Step 3:[/dim] Write a Jinja template that embeds the markdown contract and the"
