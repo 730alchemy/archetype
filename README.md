@@ -25,26 +25,16 @@ pip install archetype-md
 
 ## Quickstart
 
-```python
-from typing import Annotated
-from archetype.markdown import (
-    MarkdownDocument,
-    MarkdownHeader,
-    AsHeading,
-    AsBulletList,
-    TextTemplate,
-    render_template,
-    render_instance,
-    validate_markdown,
-)
+Given this model:
 
+```python
 class Finding(MarkdownHeader):
-    title: Annotated[str, TextTemplate("Finding {ordinal} — {value}")]
-    description: Annotated[str, AsHeading()]
+    heading: Annotated[str, TextTemplate("Finding {ordinal} — {value}")]
     recommendations: Annotated[list[str], AsBulletList()]
+    description: Annotated[str, AsHeading()]
 
 class Review(MarkdownDocument):
-    title: Annotated[str, TextTemplate("{value}")]
+    heading: Annotated[str, TextTemplate("{value}")]
     summary: Annotated[str, AsHeading()]
     findings: list[Finding]
 
@@ -56,6 +46,38 @@ review = validate_markdown(produced_markdown, Review)
 
 # Render a populated instance back to markdown
 output = render_instance(review)
+```
+
+Archetype produces and consumes markdown like this:
+
+```markdown
+# Q4 Code Review
+
+## Summary
+
+Two issues found, both fixable with minor changes.
+
+## Findings
+
+### Finding 1 — SQL Injection in login handler
+
+- Use parameterised queries
+- Validate all user input at the controller layer
+
+#### Description
+
+The login handler at auth.py:42 builds SQL by string concatenation,
+allowing an attacker to inject arbitrary SQL.
+
+### Finding 2 — Missing rate limit on password reset
+
+- Add a rate limit of 5 requests per minute per IP
+- Return a generic error message to avoid user enumeration
+
+#### Description
+
+The password reset endpoint accepts unlimited requests,
+enabling brute-force and enumeration attacks.
 ```
 
 ## Modules
@@ -83,7 +105,7 @@ Typed markdown documents backed by Pydantic models.
 | `AsBulletList()` | `list[str]` | Bullet list |
 | `AsNumberedList()` | `list[str]` | Numbered list |
 | `AsTable()` | `list[BaseModel]` | Markdown table |
-| `TextTemplate("{value}")` | `str` (title field) | Formatted heading text |
+| `TextTemplate("{value}")` | `str` (heading field) | Formatted heading text |
 
 ### `archetype.templating`
 
