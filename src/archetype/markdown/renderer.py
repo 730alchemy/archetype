@@ -91,7 +91,8 @@ def _render_body_field_template(name: str, field: object, level: int, owning_cla
         prefix = _inline_description(field)
         return f"{prefix}1. <!-- {name} item 1 -->\n2. <!-- {name} item 2 -->"
     if isinstance(ann, AsTable):
-        return _render_table_template(name, field)
+        prefix = _inline_description(field)
+        return f"{prefix}{_render_table_template(name, field)}"
     # Single MarkdownHeader-typed field: recurse at this level.
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
         return render_template(field_type, current_level=level)
