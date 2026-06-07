@@ -32,9 +32,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/730alchemy/archetype"
-Source = "https://github.com/730alchemy/archetype"
-"Bug Tracker" = "https://github.com/730alchemy/archetype/issues"
+Homepage = "https://github.com/monkeynaut-ai/archetype"
+Source = "https://github.com/monkeynaut-ai/archetype"
+"Bug Tracker" = "https://github.com/monkeynaut-ai/archetype/issues"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
