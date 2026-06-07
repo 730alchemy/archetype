@@ -1,9 +1,8 @@
-"""Example: Embedding a markdown format specification in an LLM system prompt.
+"""Example: Embedding a markdown contract in an LLM system prompt.
 
-Declare a Pydantic model for the shape of a markdown document. Call
-generate_contract() to produce a skeleton. Embed that skeleton in a system
-prompt to define the markdown contract — the structure the LLM must produce
-or consume.
+Declare a Pydantic model that defines the markdown contract. Call
+generate_contract() to produce the contract string. Embed it in a system
+prompt so the LLM knows exactly what structure to produce or consume.
 
 This example does not call an LLM.
 """
@@ -61,11 +60,11 @@ class SecurityAuditReport(MarkdownDocument):
 
 
 console.print(
-    "\n[bold]Embedding a markdown format specification in an LLM system prompt[/bold]\n\n"
-    "[dim]Step 1:[/dim] Declare a Pydantic model for the shape of a markdown document.\n"
-    "[dim]Step 2:[/dim] Call [cyan]generate_contract()[/cyan] to produce a markdown skeleton.\n"
-    "[dim]Step 3:[/dim] Embed that skeleton in a system prompt to define the markdown contract"
-    " — the structure the LLM must produce or consume.\n"
+    "\n[bold]Embedding a markdown contract in an LLM system prompt[/bold]\n\n"
+    "[dim]Step 1:[/dim] Declare a Pydantic model that defines the markdown contract.\n"
+    "[dim]Step 2:[/dim] Call [cyan]generate_contract()[/cyan] to produce the contract string.\n"
+    "[dim]Step 3:[/dim] Embed the contract in a system prompt — the LLM must produce or consume"
+    " exactly that structure.\n"
 )
 console.input("[dim]Press Enter to see the model code that defines the markdown contract...[/dim]")
 
@@ -75,20 +74,20 @@ console.print()
 console.print(Rule("markdown contract"))
 console.print(Syntax(model_code, "python", theme="monokai"))
 
-# --- Generate the format spec ---
+# --- Generate the contract ---
 
-format_spec = generate_contract(SecurityAuditReport)
+contract = generate_contract(SecurityAuditReport)
 
-console.input("\n[dim]Press Enter to see the format spec embedded in a system prompt...[/dim]")
+console.input("\n[dim]Press Enter to see the contract embedded in a system prompt...[/dim]")
 
 # --- How to embed it in a system prompt ---
 
 system_prompt = f"""You are a security auditor. Analyse the code provided by the user
 and produce a security audit report.
 
-You MUST respond in the following markdown format exactly:
+You MUST follow this markdown contract exactly:
 
-{format_spec}
+{contract}
 
 Do not add any sections not listed above. Do not omit any sections."""
 
