@@ -39,13 +39,13 @@ def validate_template_class(cls: type[MarkdownHeader]) -> None:
     Called from __pydantic_init_subclass__. Raises MarkdownTemplateError on any rule
     violation, including the offending field name and a fix suggestion in the message."""
 
-    _check_title_rule(cls)
+    _check_heading_rule(cls)
     _check_body_order_rule(cls)
     _check_frontmatter_rule(cls)
     _check_type_compatibility_rule(cls)
 
 
-def _check_title_rule(cls: type[MarkdownHeader]) -> None:
+def _check_heading_rule(cls: type[MarkdownHeader]) -> None:
     """Heading field must exist and be of type str."""
     fields = cls.model_fields
     if "heading" not in fields:
