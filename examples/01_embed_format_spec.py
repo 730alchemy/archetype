@@ -11,6 +11,7 @@ This example does not call an LLM.
 import inspect
 from typing import Annotated
 
+from pydantic import Field
 from rich.console import Console
 from rich.rule import Rule
 from rich.syntax import Syntax
@@ -31,19 +32,31 @@ console = Console()
 class Finding(MarkdownHeader):
     heading: Annotated[str, TextTemplate("Finding {ordinal} — {value}")]
     # Non-heading fields first:
-    affected_code: Annotated[str, AsCodeBlock(language="python")]
-    recommendations: Annotated[list[str], AsBulletList()]
+    affected_code: Annotated[str, AsCodeBlock(language="python")] = Field(
+        description="The vulnerable code snippet."
+    )
+    recommendations: Annotated[list[str], AsBulletList()] = Field(
+        description="Concrete remediation steps. Include at least two."
+    )
     # Heading fields after:
-    description: Annotated[str, AsHeading()]
-    impact: Annotated[str, AsHeading()]
+    description: Annotated[str, AsHeading()] = Field(
+        description="Clear explanation of the vulnerability and how it could be exploited."
+    )
+    impact: Annotated[str, AsHeading()] = Field(
+        description="Rate as Critical, High, Medium, or Low. Explain the business impact."
+    )
 
 
 class SecurityAuditReport(MarkdownDocument):
     heading: Annotated[str, TextTemplate("{value}")]
     # Non-heading fields first:
-    next_steps: Annotated[list[str], AsBulletList()]
+    next_steps: Annotated[list[str], AsBulletList()] = Field(
+        description="Prioritised list of actions for the engineering team."
+    )
     # Heading fields after:
-    executive_summary: Annotated[str, AsHeading()]
+    executive_summary: Annotated[str, AsHeading()] = Field(
+        description="One paragraph suitable for a non-technical audience."
+    )
     findings: list[Finding]
 
 

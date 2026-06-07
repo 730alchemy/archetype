@@ -82,11 +82,14 @@ def _render_body_field_template(name: str, field: object, level: int, owning_cla
         return f"{'#' * level} {heading_text}\n\n{description_comment}"
     if isinstance(ann, AsCodeBlock):
         lang = ann.language or ""
-        return f"```{lang}\n<!-- {name} code -->\n```"
+        prefix = _inline_description(field)
+        return f"{prefix}```{lang}\n<!-- {name} code -->\n```"
     if isinstance(ann, AsBulletList):
-        return f"- <!-- {name} item 1 -->\n- <!-- {name} item 2 -->"
+        prefix = _inline_description(field)
+        return f"{prefix}- <!-- {name} item 1 -->\n- <!-- {name} item 2 -->"
     if isinstance(ann, AsNumberedList):
-        return f"1. <!-- {name} item 1 -->\n2. <!-- {name} item 2 -->"
+        prefix = _inline_description(field)
+        return f"{prefix}1. <!-- {name} item 1 -->\n2. <!-- {name} item 2 -->"
     if isinstance(ann, AsTable):
         return _render_table_template(name, field)
     # Single MarkdownHeader-typed field: recurse at this level.
@@ -127,6 +130,13 @@ def _description_comment(field: object) -> str:
     if desc:
         return f"<!-- {desc} -->"
     return "<!-- field body -->"
+
+
+def _inline_description(field: object) -> str:
+    """Return a description comment line to prepend to a non-heading field's placeholder.
+    Returns an empty string when the field has no description."""
+    desc = getattr(field, "description", None)
+    return f"<!-- {desc} -->\n" if desc else ""
 
 
 def _rebase_headings_in_body(text: str, *, target_level: int) -> str:

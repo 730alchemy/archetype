@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Annotated
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from tests.archetype.markdown.fixtures.sample_models import (
     Finding,
     HeaderWithSummary,
@@ -157,6 +157,59 @@ class TestRenderInstance:
         assert "## Summary" in out
         assert "## Findings" in out
         assert "### Finding 1 - t1" in out
+
+
+class TestRenderTemplateInlineDescriptions:
+    """When a field has Field(description=...), render_template() includes it inline."""
+
+    def test_as_heading_with_description_emits_description_comment(self):
+        class Doc(MarkdownHeader):
+            summary: Annotated[str, AsHeading()] = Field(description="High-level overview.")
+
+        out = render_template(Doc)
+        assert "<!-- High-level overview. -->" in out
+        assert "<!-- field body -->" not in out
+
+    def test_as_heading_without_description_emits_field_body_placeholder(self):
+        class Doc(MarkdownHeader):
+            summary: Annotated[str, AsHeading()]
+
+        out = render_template(Doc)
+        assert "<!-- field body -->" in out
+
+    def test_as_code_block_with_description_emits_description_comment(self):
+        class Doc(MarkdownHeader):
+            snippet: Annotated[str, AsCodeBlock(language="python")] = Field(
+                description="The vulnerable code."
+            )
+
+        out = render_template(Doc)
+        assert "<!-- The vulnerable code. -->" in out
+
+    def test_as_bullet_list_with_description_emits_description_comment(self):
+        class Doc(MarkdownHeader):
+            tags: Annotated[list[str], AsBulletList()] = Field(description="One tag per item.")
+
+        out = render_template(Doc)
+        assert "<!-- One tag per item. -->" in out
+
+    def test_as_numbered_list_with_description_emits_description_comment(self):
+        class Doc(MarkdownHeader):
+            steps: Annotated[list[str], AsNumberedList()] = Field(
+                description="Ordered remediation steps."
+            )
+
+        out = render_template(Doc)
+        assert "<!-- Ordered remediation steps. -->" in out
+
+    def test_description_appears_before_placeholder(self):
+        class Doc(MarkdownHeader):
+            summary: Annotated[str, AsHeading()] = Field(description="Overview.")
+
+        out = render_template(Doc)
+        desc_pos = out.index("<!-- Overview. -->")
+        body_pos = out.index("<!-- field body -->") if "<!-- field body -->" in out else len(out)
+        assert desc_pos < body_pos
 
 
 class TestDepthGuard:
