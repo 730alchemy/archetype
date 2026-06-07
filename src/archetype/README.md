@@ -35,7 +35,7 @@ Archetype has two submodules:
   Pydantic models (template generation, rendering, parsing, validation,
   subtree extraction, heading-field introspection).
 - `archetype.templating` — a preconfigured Jinja environment with
-  markdown-aware globals (`template_fields`, `render_template`) and a
+  markdown-aware globals (`template_fields`, `generate_contract`) and a
   `resolve()` helper for one-pass instruction templating.
 
 ### Declaring a document
@@ -62,11 +62,11 @@ class Review(MarkdownDocument):
 
 ```python
 from archetype.markdown import (
-    render_template, render_instance, validate_markdown, template_fields,
+    generate_contract, render_instance, validate_markdown, template_fields,
 )
 
 # Skeleton markdown to embed in an agent's prompt
-template_md = render_template(Review)
+template_md = generate_contract(Review)
 
 # Turn an LLM's markdown reply back into a typed instance
 review: Review = validate_markdown(llm_output, Review)
@@ -101,7 +101,7 @@ The feature definition has these sections:
 
 Your output must match this structure:
 
-{{ render_template(DesignDocument) }}
+{{ generate_contract(DesignDocument) }}
 ```
 
 Templates use only `{{ path }}`, `{% for x in path %}…{% endfor %}`, and the
@@ -151,7 +151,7 @@ of it. There is no parallel source of truth for any of these arrows.
         │  archetype.templating.resolve(...)   │
         │                                      │
         │  globals: template_fields,           │
-        │           render_template            │
+        │           generate_contract            │
         │                                      │
         │  one-pass agent-instruction rendering│
         └──────────────────────────────────────┘
@@ -174,14 +174,14 @@ of it. There is no parallel source of truth for any of these arrows.
 
 | Arrow                  | Reads from the model                                  | Produces                                |
 | ---------------------- | ----------------------------------------------------- | --------------------------------------- |
-| `render_template`      | field names, annotations, nested types                | skeleton markdown for prompts           |
+| `generate_contract`      | field names, annotations, nested types                | skeleton markdown for prompts           |
 | `render_instance`      | instance values + annotations                         | markdown serialization                  |
 | `validate_markdown`    | field types, annotations, structural rules            | typed instance (or `MarkdownValidationError`) |
 | Meta-validation hook   | class structure at definition time                    | early `MarkdownError` on malformed templates |
 | `template_fields`      | heading-introducing fields and their docstrings       | `FieldInfo(heading, description)` stream |
 | `extract_subtree`      | nested `MarkdownHeader` types                         | typed slice of a larger document        |
 | `Model.model_json_schema()` | field types (Pydantic-native)                    | JSON Schema for structured-output APIs  |
-| `resolve()` (Jinja)    | the model, via `template_fields` / `render_template`  | fully-resolved instruction string       |
+| `resolve()` (Jinja)    | the model, via `template_fields` / `generate_contract`  | fully-resolved instruction string       |
 
 The takeaway: edit the annotated Pydantic class, and every artifact above
 follows. No other file needs to change for the prompt, the parser, the

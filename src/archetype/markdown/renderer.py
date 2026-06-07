@@ -1,8 +1,8 @@
 """Deterministic markdown renderer for MarkdownHeader/MarkdownDocument templates and instances.
 
 Two entry points:
-  - render_template(model_class) -> str:  the annotated skeleton
-  - render_instance(instance)    -> str:  a populated document
+  - generate_contract(model_class) -> str:  the annotated skeleton
+  - render_instance(instance)      -> str:  a populated document
 
 Both walk fields in declaration order, dispatch on field role (structural vs
 annotation-driven), and emit the corresponding markdown. Heading levels are
@@ -27,8 +27,8 @@ if TYPE_CHECKING:
 _MAX_HEADING_LEVEL = 6
 
 
-def render_template(model_class: type[MarkdownHeader], *, current_level: int = 1) -> str:
-    """Render the annotated skeleton template for a MarkdownHeader subclass."""
+def generate_contract(model_class: type[MarkdownHeader], *, current_level: int = 1) -> str:
+    """Generate the annotated contract skeleton for a MarkdownHeader subclass."""
     _guard_heading_level(model_class, current_level)
     title_text = _derive_title_text_for_template(model_class)
     parts: list[str] = [f"{'#' * current_level} {title_text}", ""]
@@ -95,7 +95,7 @@ def _render_body_field_template(name: str, field: object, level: int, owning_cla
         return f"{prefix}{_render_table_template(name, field)}"
     # Single MarkdownHeader-typed field: recurse at this level.
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
-        return render_template(field_type, current_level=level)
+        return generate_contract(field_type, current_level=level)
     # list[MarkdownHeader-subclass]: wrapper heading + item template.
     if get_origin(field_type) is list:
         args = get_args(field_type)
@@ -103,7 +103,7 @@ def _render_body_field_template(name: str, field: object, level: int, owning_cla
             wrapper_text = resolve_wrapper_text(name, field)
             _guard_heading_level(owning_class, level)
             wrapper = f"{'#' * level} {wrapper_text}"
-            item_template = render_template(args[0], current_level=level + 1)
+            item_template = generate_contract(args[0], current_level=level + 1)
             return f"{wrapper}\n\n{item_template}"
     return ""  # unrecognised field shape; no output
 

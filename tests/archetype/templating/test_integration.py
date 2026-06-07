@@ -57,7 +57,7 @@ Assumptions:
 
 ## Output skeleton
 
-{{ render_template(_FeatureDef) }}
+{{ generate_contract(_FeatureDef) }}
 """
 
 
@@ -84,7 +84,7 @@ class TestRenderInstructionsIntegration:
         assert "- Low traffic\n- SSO available" in result
 
         # Skeleton renderer produces body-heading structure. (Phase 1's
-        # render_template emits placeholder comments for unfilled slots; we
+        # generate_contract emits placeholder comments for unfilled slots; we
         # just assert the body headings we annotated appear.)
         assert "## Problem Statement" in result
         assert "## Output skeleton" in result

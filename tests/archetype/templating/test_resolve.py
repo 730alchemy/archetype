@@ -57,16 +57,16 @@ class TestStructuralIteration:
 
 
 class TestSkeletonRendering:
-    """render_template() used as a Jinja global emits the Phase 1 skeleton."""
+    """generate_contract() used as a Jinja global emits the Phase 1 skeleton."""
 
-    def test_render_template_skeleton_matches_direct_call(self):
-        from archetype.markdown.renderer import render_template
+    def test_generate_contract_skeleton_matches_direct_call(self):
+        from archetype.markdown.renderer import generate_contract
 
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()] = Field(description="Summary.")
 
-        direct = render_template(Doc)
-        via_jinja = resolve("{{ render_template(Doc) }}", Doc=Doc)
+        direct = generate_contract(Doc)
+        via_jinja = resolve("{{ generate_contract(Doc) }}", Doc=Doc)
 
         assert via_jinja == direct
 

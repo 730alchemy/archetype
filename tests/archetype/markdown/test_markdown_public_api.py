@@ -20,8 +20,8 @@ class TestPublicAPI:
             MarkdownValidationError,
             TextTemplate,
             extract_subtree,
+            generate_contract,
             render_instance,
-            render_template,
             validate_markdown,
         )
 
@@ -36,7 +36,7 @@ class TestPublicAPI:
                 AsBulletList,
                 AsNumberedList,
                 TextTemplate,
-                render_template,
+                generate_contract,
                 render_instance,
                 validate_markdown,
                 extract_subtree,

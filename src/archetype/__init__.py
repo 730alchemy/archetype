@@ -13,7 +13,7 @@ Modules:
 
 - ``archetype.templating`` — Jinja-based template resolution. Provides
   a preconfigured Jinja environment with markdown-aware globals
-  (``template_fields``, ``render_template``) and a ``resolve()`` helper
+  (``template_fields``, ``generate_contract``) and a ``resolve()`` helper
   that renders a template string against a context object.
 
 See individual submodule docstrings for details.

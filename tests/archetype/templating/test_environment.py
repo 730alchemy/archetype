@@ -38,16 +38,16 @@ class TestEnvironmentConfig:
 
 
 class TestEnvironmentGlobals:
-    """The factory registers `template` and `render_template` as Jinja globals
+    """The factory registers `template` and `generate_contract` as Jinja globals
     so instruction templates can call them directly."""
 
     def test_template_fields_global_registered(self):
         env = build_environment()
         assert "template_fields" in env.globals
 
-    def test_render_template_global_registered(self):
+    def test_generate_contract_global_registered(self):
         env = build_environment()
-        assert "render_template" in env.globals
+        assert "generate_contract" in env.globals
 
 
 class TestEnvironmentGlobalsUsable:
@@ -66,15 +66,15 @@ class TestEnvironmentGlobalsUsable:
 
         assert result == "Summary|Detail|"
 
-    def test_render_template_global_returns_skeleton_inside_jinja(self):
+    def test_generate_contract_global_returns_skeleton_inside_jinja(self):
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()] = Field(description="Summary.")
 
         env = build_environment()
-        tmpl = env.from_string("{{ render_template(Doc) }}")
+        tmpl = env.from_string("{{ generate_contract(Doc) }}")
         result = tmpl.render(Doc=Doc)
 
-        # Phase 1's render_template produces a skeleton containing the title
+        # Phase 1's generate_contract produces a skeleton containing the title
         # heading and section headings. We just assert the section heading
         # appears in the output — the full shape is covered by Phase 1 tests.
         assert "Summary" in result
