@@ -39,7 +39,7 @@ class Review(MarkdownDocument):
     findings: list[Finding]
 
 # Generate a blank template (e.g. to hand to an LLM)
-template = render_template(Review)
+template = generate_contract(Review)
 
 # Parse markdown back into a validated model instance
 review = validate_markdown(produced_markdown, Review)
@@ -90,7 +90,7 @@ Typed markdown documents backed by Pydantic models.
 |--------|---------|
 | `MarkdownDocument` | Base class for top-level documents (adds optional YAML frontmatter) |
 | `MarkdownHeader` | Base class for heading-shaped sub-documents |
-| `render_template(cls)` | Emit an annotated skeleton with placeholder comments |
+| `generate_contract(cls)` | Emit an annotated skeleton with placeholder comments |
 | `render_instance(obj)` | Render a populated instance to markdown |
 | `validate_markdown(text, cls)` | Parse markdown and return a validated instance |
 | `template_fields(cls)` | Iterate `FieldInfo` entries for use in Jinja templates |
@@ -120,7 +120,7 @@ instructions = resolve(
 )
 ```
 
-`resolve` runs with strict undefined semantics — any missing variable raises `jinja2.UndefinedError` immediately. Two globals are available inside every template: `template_fields(ModelClass)` and `render_template(ModelClass)`.
+`resolve` runs with strict undefined semantics — any missing variable raises `jinja2.UndefinedError` immediately. Two globals are available inside every template: `template_fields(ModelClass)` and `generate_contract(ModelClass)`.
 
 ## Design
 

@@ -8,7 +8,7 @@ globals that templates rely on:
     describing the model's body heading sections. See
     ``archetype.markdown.introspection``.
 
-  - ``render_template(ModelClass)`` — returns the full annotated markdown
+  - ``generate_contract(ModelClass)`` — returns the full annotated markdown
     skeleton for the model. See ``archetype.markdown.renderer``.
 
 Convention (documented; not runtime-enforced): templates use only
@@ -22,7 +22,7 @@ from __future__ import annotations
 import jinja2
 
 from archetype.markdown.introspection import template_fields
-from archetype.markdown.renderer import render_template
+from archetype.markdown.renderer import generate_contract
 
 
 def build_environment() -> jinja2.Environment:
@@ -36,7 +36,7 @@ def build_environment() -> jinja2.Environment:
 
     Registered globals:
       - ``template_fields``: the heading-field accessor.
-      - ``render_template``: the markdown skeleton renderer.
+      - ``generate_contract``: the markdown skeleton renderer.
     """
 
     env = jinja2.Environment(
@@ -46,5 +46,5 @@ def build_environment() -> jinja2.Environment:
         autoescape=False,
     )
     env.globals["template_fields"] = template_fields
-    env.globals["render_template"] = render_template
+    env.globals["generate_contract"] = generate_contract
     return env

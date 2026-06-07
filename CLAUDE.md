@@ -22,7 +22,7 @@ Typed markdown documents backed by Pydantic models.
   - `AsBulletList` / `AsNumberedList` — `list[str]` rendered as a list
   - `AsTable` — `list[BaseModel]` rendered as a markdown table
   - `TextTemplate(template)` — format string for the heading title (`{value}`, `{ordinal}`)
-- **`render_template(ModelClass)`** — emit the annotated skeleton (placeholder comments)
+- **`generate_contract(ModelClass)`** — emit the annotated skeleton (placeholder comments)
 - **`render_instance(instance)`** — emit a populated document
 - **`validate_markdown(text, ModelClass)`** — parse markdown and return a validated instance; raises `MarkdownValidationError` with field-localized messages on failure
 - **`template_fields(ModelClass)`** — iterate `FieldInfo` entries (`.heading`, `.description`) for introspection in Jinja templates
@@ -33,7 +33,7 @@ Typed markdown documents backed by Pydantic models.
 Jinja-based template resolution with markdown-aware globals.
 
 - **`resolve(template_text, **context)`** — render a Jinja template against a context dict; raises `jinja2.UndefinedError` on undefined paths (strict semantics)
-- **`build_environment()`** — returns a pre-configured Jinja environment with `template_fields` and `render_template` registered as globals
+- **`build_environment()`** — returns a pre-configured Jinja environment with `template_fields` and `generate_contract` registered as globals
 
 `resolve()` is the primary entry point for agent instruction providers. Templates use only `{{ path }}`, `{% for %}...{% endfor %}`, and the two registered globals — no filters, conditionals, macros, or inheritance without deliberate intent.
 
@@ -67,7 +67,7 @@ src/archetype/
   markdown/          — typed markdown documents
     annotations.py   — field annotation dataclasses
     template_model.py — MarkdownHeader, MarkdownDocument bases
-    renderer.py      — render_template, render_instance
+    renderer.py      — generate_contract, render_instance
     parser.py        — validate_markdown entry point
     extractor.py     — extract_subtree
     introspection.py — template_fields, FieldInfo

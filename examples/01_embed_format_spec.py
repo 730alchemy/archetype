@@ -1,7 +1,7 @@
 """Example: Embedding a markdown format specification in an LLM system prompt.
 
 Declare a Pydantic model for the shape of a markdown document. Call
-render_template() to produce a skeleton. Embed that skeleton in a system
+generate_contract() to produce a skeleton. Embed that skeleton in a system
 prompt to define the markdown contract — the structure the LLM must produce
 or consume.
 
@@ -23,7 +23,7 @@ from archetype.markdown import (
     MarkdownDocument,
     MarkdownHeader,
     TextTemplate,
-    render_template,
+    generate_contract,
 )
 
 console = Console()
@@ -63,7 +63,7 @@ class SecurityAuditReport(MarkdownDocument):
 console.print(
     "\n[bold]Embedding a markdown format specification in an LLM system prompt[/bold]\n\n"
     "[dim]Step 1:[/dim] Declare a Pydantic model for the shape of a markdown document.\n"
-    "[dim]Step 2:[/dim] Call [cyan]render_template()[/cyan] to produce a markdown skeleton.\n"
+    "[dim]Step 2:[/dim] Call [cyan]generate_contract()[/cyan] to produce a markdown skeleton.\n"
     "[dim]Step 3:[/dim] Embed that skeleton in a system prompt to define the markdown contract"
     " — the structure the LLM must produce or consume.\n"
 )
@@ -77,7 +77,7 @@ console.print(Syntax(model_code, "python", theme="monokai"))
 
 # --- Generate the format spec ---
 
-format_spec = render_template(SecurityAuditReport)
+format_spec = generate_contract(SecurityAuditReport)
 
 console.input("\n[dim]Press Enter to see the format spec embedded in a system prompt...[/dim]")
 

@@ -3,7 +3,7 @@
 resolve() renders a Jinja template against a context. Two globals are
 available inside every template:
 
-  - render_template(ModelClass)  — the full annotated markdown skeleton
+  - generate_contract(ModelClass)  — the full annotated markdown skeleton
   - template_fields(ModelClass)  — per-section heading and description metadata
 
 template_fields() only works on models whose body fields are all AsHeading
@@ -11,7 +11,7 @@ template_fields() only works on models whose body fields are all AsHeading
 for each section — useful for injecting semantic context into instructions.
 
 This example shows two patterns:
-  1. Embed the markdown contract via render_template.
+  1. Embed the markdown contract via generate_contract.
   2. Inject per-section semantic context via template_fields on an all-heading model.
 """
 
@@ -79,7 +79,7 @@ a structured audit report.
 
 Respond in the following markdown format exactly. Do not add or omit sections.
 
-{{ render_template(Report) }}
+{{ generate_contract(Report) }}
 
 ## Field guidance
 

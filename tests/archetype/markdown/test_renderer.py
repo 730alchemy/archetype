@@ -22,7 +22,7 @@ from archetype.markdown.annotations import (
     AsTable,
 )
 from archetype.markdown.errors import MarkdownTemplateError
-from archetype.markdown.renderer import render_instance, render_template
+from archetype.markdown.renderer import generate_contract, render_instance
 from archetype.markdown.template_model import MarkdownHeader
 
 
@@ -30,7 +30,7 @@ class TestRenderTemplateSimpleHeader:
     """Skeleton output for the smallest possible header."""
 
     def test_simple_header_emits_h1_placeholder(self):
-        out = render_template(SimpleHeader)
+        out = generate_contract(SimpleHeader)
         # Top-level header at level 1; title placeholder uses field-description style.
         assert out.startswith("# ")
         assert out.endswith("\n")
@@ -40,14 +40,14 @@ class TestRenderHeadingBodyFields:
     """AsHeading on str body field renders as `## FieldName` + placeholder body."""
 
     def test_summary_field_renders_at_level_2(self):
-        out = render_template(HeaderWithSummary)
+        out = generate_contract(HeaderWithSummary)
         # Title at level 1, summary at level 2.
         assert "# " in out
         assert "## Summary" in out
 
     def test_summary_field_field_name_is_title_cased(self):
         # snake_case → Title Case
-        out = render_template(HeaderWithSummary)
+        out = generate_contract(HeaderWithSummary)
         assert "## Summary" in out
         assert "## summary" not in out
 
@@ -59,7 +59,7 @@ class TestRenderNonHeadingBodyFields:
         class WithCode(MarkdownHeader):
             snippet: Annotated[str, AsCodeBlock(language="python")]
 
-        out = render_template(WithCode)
+        out = generate_contract(WithCode)
         assert "```python" in out
         assert "```" in out
 
@@ -67,14 +67,14 @@ class TestRenderNonHeadingBodyFields:
         class WithBullets(MarkdownHeader):
             tags: Annotated[list[str], AsBulletList()]
 
-        out = render_template(WithBullets)
+        out = generate_contract(WithBullets)
         assert "- " in out
 
     def test_numbered_list_template_emits_one_dot_placeholder(self):
         class WithNumbers(MarkdownHeader):
             steps: Annotated[list[str], AsNumberedList()]
 
-        out = render_template(WithNumbers)
+        out = generate_contract(WithNumbers)
         assert "1. " in out
 
 
@@ -87,7 +87,7 @@ class TestRenderTable:
         class WithTable(MarkdownHeader):
             files: Annotated[list[Row], AsTable()]
 
-        out = render_template(WithTable)
+        out = generate_contract(WithTable)
         assert "| Path | Lines |" in out
         assert "|---|---|" in out
 
@@ -97,14 +97,14 @@ class TestRenderHeadingIntroducingFields:
         class WithFindings(MarkdownHeader):
             findings: list[Finding]
 
-        out = render_template(WithFindings)
+        out = generate_contract(WithFindings)
         assert "## Findings" in out  # wrapper heading
 
     def test_finding_item_template_emits_ordinal_placeholder(self):
         class WithFindings(MarkdownHeader):
             findings: list[Finding]
 
-        out = render_template(WithFindings)
+        out = generate_contract(WithFindings)
         # The Finding subdocument's title carries TextTemplate("Finding {ordinal} - {value}")
         # In skeleton form, ordinal is shown as "{ordinal}" or a literal placeholder.
         assert "Finding {ordinal}" in out or "### Finding 1" in out
@@ -160,13 +160,13 @@ class TestRenderInstance:
 
 
 class TestRenderTemplateInlineDescriptions:
-    """When a field has Field(description=...), render_template() includes it inline."""
+    """When a field has Field(description=...), generate_contract() includes it inline."""
 
     def test_as_heading_with_description_emits_description_comment(self):
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()] = Field(description="High-level overview.")
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         assert "<!-- High-level overview. -->" in out
         assert "<!-- field body -->" not in out
 
@@ -174,7 +174,7 @@ class TestRenderTemplateInlineDescriptions:
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()]
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         assert "<!-- field body -->" in out
 
     def test_as_code_block_with_description_emits_description_comment(self):
@@ -183,14 +183,14 @@ class TestRenderTemplateInlineDescriptions:
                 description="The vulnerable code."
             )
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         assert "<!-- The vulnerable code. -->" in out
 
     def test_as_bullet_list_with_description_emits_description_comment(self):
         class Doc(MarkdownHeader):
             tags: Annotated[list[str], AsBulletList()] = Field(description="One tag per item.")
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         assert "<!-- One tag per item. -->" in out
 
     def test_as_numbered_list_with_description_emits_description_comment(self):
@@ -199,7 +199,7 @@ class TestRenderTemplateInlineDescriptions:
                 description="Ordered remediation steps."
             )
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         assert "<!-- Ordered remediation steps. -->" in out
 
     def test_as_table_with_description_emits_description_comment(self):
@@ -210,14 +210,14 @@ class TestRenderTemplateInlineDescriptions:
         class Doc(MarkdownHeader):
             findings: Annotated[list[Row], AsTable()] = Field(description="One row per finding.")
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         assert "<!-- One row per finding. -->" in out
 
     def test_description_appears_before_placeholder(self):
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()] = Field(description="Overview.")
 
-        out = render_template(Doc)
+        out = generate_contract(Doc)
         desc_pos = out.index("<!-- Overview. -->")
         body_pos = out.index("<!-- field body -->") if "<!-- field body -->" in out else len(out)
         assert desc_pos < body_pos
@@ -247,4 +247,4 @@ class TestDepthGuard:
             inner: L2
 
         with pytest.raises(MarkdownTemplateError, match="level 7"):
-            render_template(L1)
+            generate_contract(L1)

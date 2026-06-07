@@ -13,7 +13,7 @@ inside templates:
     ``MarkdownHeader`` (or ``MarkdownDocument``) subclass; yields
     ``FieldInfo`` entries with ``.heading`` and ``.description``.
 
-  - ``render_template(ModelClass)`` — emit the full annotated markdown
+  - ``generate_contract(ModelClass)`` — emit the full annotated markdown
     skeleton for a template model.
 
 Example::
@@ -35,7 +35,7 @@ Example::
     #
     #   Your output must match this structure:
     #
-    #   {{ render_template(DesignDocument) }}
+    #   {{ generate_contract(DesignDocument) }}
 
 Convention (documented; not runtime-enforced): templates use only
 ``{{ path }}``, ``{% for x in path %}...{% endfor %}``, and the two
