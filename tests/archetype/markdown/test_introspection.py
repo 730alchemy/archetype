@@ -7,7 +7,13 @@ from typing import Annotated
 import pytest
 from pydantic import BaseModel, Field
 
-from archetype.markdown.annotations import AsBulletList, AsCodeBlock, AsHeading
+from archetype.markdown.annotations import (
+    AsBulletList,
+    AsCodeBlock,
+    AsHeading,
+    AsNumberedList,
+    AsTable,
+)
 from archetype.markdown.introspection import FieldInfo, template_fields
 from archetype.markdown.template_model import MarkdownDocument, MarkdownHeader
 
@@ -122,37 +128,57 @@ class TestTemplateSkipsStructuralFields:
         assert headings == ["Summary"]
 
 
-class TestTemplateUnsupportedShapes:
-    """Fields that template_fields() does not know how to describe as sections must
-    raise a clear ValueError — so Slice 1's scope is visible and future
-    extensions are deliberate."""
+class TestTemplateSkipsNonHeadingFields:
+    """Non-heading fields (AsCodeBlock, AsBulletList, AsNumberedList, AsTable,
+    plain typed fields) are silently skipped — they produce no heading in the
+    rendered document so have nothing to contribute to template_fields()."""
 
-    def test_as_bullet_list_top_level_raises(self):
-        """AsBulletList is a non-heading body field — not a section, not
-        supported by template_fields() in Slice 1."""
-
+    def test_as_bullet_list_is_skipped(self):
         class Doc(MarkdownHeader):
             items: Annotated[list[str], AsBulletList()] = Field(description="Items.")
 
-        with pytest.raises(ValueError, match="items"):
-            template_fields(Doc)
+        assert template_fields(Doc) == []
 
-    def test_as_code_block_top_level_raises(self):
+    def test_as_code_block_is_skipped(self):
         class Doc(MarkdownHeader):
             snippet: Annotated[str, AsCodeBlock()] = Field(description="Code.")
 
-        with pytest.raises(ValueError, match="snippet"):
-            template_fields(Doc)
+        assert template_fields(Doc) == []
 
-    def test_untyped_body_field_raises(self):
-        """A body field with neither a role annotation nor a MarkdownHeader type
-        is ambiguous — template_fields() raises."""
+    def test_as_numbered_list_is_skipped(self):
+        class Doc(MarkdownHeader):
+            steps: Annotated[list[str], AsNumberedList()] = Field(description="Steps.")
 
+        assert template_fields(Doc) == []
+
+    def test_as_table_is_skipped(self):
+        class Row(BaseModel):
+            a: str
+
+        class Doc(MarkdownHeader):
+            rows: Annotated[list[Row], AsTable()] = Field(description="Rows.")
+
+        assert template_fields(Doc) == []
+
+    def test_plain_typed_field_is_skipped(self):
         class Doc(MarkdownHeader):
             raw: str = Field(description="Raw text.")
 
-        with pytest.raises(ValueError, match="raw"):
-            template_fields(Doc)
+        assert template_fields(Doc) == []
+
+    def test_mixed_model_returns_only_heading_fields(self):
+        """A real contract model with both heading and non-heading fields returns
+        only the heading-shaped ones."""
+
+        class Doc(MarkdownHeader):
+            code: Annotated[str, AsCodeBlock(language="python")] = Field(description="Code.")
+            tags: Annotated[list[str], AsBulletList()] = Field(description="Tags.")
+            summary: Annotated[str, AsHeading()] = Field(description="Summary section.")
+            detail: Annotated[str, AsHeading()] = Field(description="Detail section.")
+
+        result = template_fields(Doc)
+
+        assert [f.heading for f in result] == ["Summary", "Detail"]
 
 
 class TestTemplateOnMarkdownDocumentSubclass:

@@ -50,10 +50,11 @@ class FieldInfo:
 def template_fields(model_class: type[MarkdownHeader]) -> list[FieldInfo]:
     """Return per-section heading metadata for a ``MarkdownHeader`` subclass.
 
-    Skips structural fields (``title``, ``frontmatter``). For each remaining
-    body field, resolves heading text and returns a ``FieldInfo``. Raises
-    ``ValueError`` on any field shape the accessor does not know how to
-    describe.
+    Skips structural fields (``heading``, ``frontmatter``) and any body field
+    that does not produce a heading (``AsCodeBlock``, ``AsBulletList``,
+    ``AsNumberedList``, ``AsTable``, plain typed fields). Only
+    ``Annotated[str, AsHeading()]`` fields and ``MarkdownHeader``-typed fields
+    with a ``heading`` default are returned.
     """
 
     result: list[FieldInfo] = []
@@ -62,15 +63,20 @@ def template_fields(model_class: type[MarkdownHeader]) -> list[FieldInfo]:
             continue
 
         heading = _resolve_heading(model_class, name, field)
+        if heading is None:
+            continue
         description = field.description
         result.append(FieldInfo(heading=heading, description=description))
 
     return result
 
 
-def _resolve_heading(model_class: type[MarkdownHeader], field_name: str, field: object) -> str:
-    """Resolve heading text for one body field, or raise ValueError if the
-    field's shape is not supported."""
+def _resolve_heading(
+    model_class: type[MarkdownHeader], field_name: str, field: object
+) -> str | None:
+    """Resolve heading text for one body field, or return None if the field
+    produces no heading. Raises ValueError only when the field is typed as a
+    MarkdownHeader subclass but no heading text can be derived."""
 
     annotation = get_role_annotation(field)
 
@@ -78,7 +84,7 @@ def _resolve_heading(model_class: type[MarkdownHeader], field_name: str, field: 
     if isinstance(annotation, AsHeading):
         return snake_to_title(field_name)
 
-    # Shape 2: field typed as a MarkdownHeader subclass → subclass's title default.
+    # Shape 2: field typed as a MarkdownHeader subclass → subclass's heading default.
     field_type = getattr(field, "annotation", None)
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
         title_field = field_type.model_fields.get("heading")
@@ -100,11 +106,5 @@ def _resolve_heading(model_class: type[MarkdownHeader], field_name: str, field: 
             )
         return default
 
-    # Any other shape is not supported.
-    raise ValueError(
-        f"{model_class.__name__}.{field_name} has a field shape "
-        f"template_fields() does not support. Supported shapes are "
-        f"Annotated[str, AsHeading()] and fields typed as a MarkdownHeader "
-        f"subclass with a `heading` default. Got annotation={annotation!r}, "
-        f"type={field_type!r}."
-    )
+    # Non-heading field shapes (AsCodeBlock, AsBulletList, etc.) produce no heading.
+    return None
