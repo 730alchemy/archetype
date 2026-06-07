@@ -34,7 +34,7 @@ class FindingMetadata(BaseModel):
 class Finding(MarkdownHeader):
     """A finding: title with ordinal-prefix template, then body sections."""
 
-    title: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
+    heading: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
     code: Annotated[str, AsCodeBlock(language="python")]
     tags: Annotated[list[str], AsBulletList()]
     description: Annotated[str, AsHeading()]
@@ -50,7 +50,7 @@ class ReviewerOutput(MarkdownDocument):
     """The full Reviewer template — exercises every Phase-1 annotation."""
 
     frontmatter: ReviewerMetadata | None = None
-    title: Annotated[str, TextTemplate("{value}")]
+    heading: Annotated[str, TextTemplate("{value}")]
     next_steps: Annotated[list[str], AsNumberedList()]
     summary: Annotated[str, AsHeading()]
     findings: list[Finding]

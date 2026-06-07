@@ -66,9 +66,9 @@ class TestTemplateOnNestedMarkdownHeader:
     """For body fields typed as a MarkdownHeader subclass, template_fields() uses
     the subclass's `title` field default as the heading text."""
 
-    def test_nested_header_uses_subclass_title_default(self):
+    def test_nested_header_uses_subclass_heading_default(self):
         class NestedSection(MarkdownHeader):
-            title: str = "Desired outcomes"
+            heading: str = "Desired outcomes"
             inner: Annotated[str, AsHeading()] = Field(description="Inner body.")
 
         class Doc(MarkdownHeader):

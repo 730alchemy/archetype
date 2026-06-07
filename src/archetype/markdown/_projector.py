@@ -49,7 +49,7 @@ def project_to_model[T: MarkdownHeader](
         )
     top_heading = doc.blocks[0]
     raw_title = _extract_title_value(top_heading.text, model_class)
-    instance_kwargs: dict = {"title": raw_title}
+    instance_kwargs: dict = {"heading": raw_title}
 
     if issubclass(model_class, MarkdownDocument) and doc.frontmatter is not None:
         fm_field_type = model_class.model_fields["frontmatter"].annotation
@@ -66,7 +66,7 @@ def project_to_model[T: MarkdownHeader](
     body_blocks = top_heading.body
     cursor = 0
     for name, field in model_class.model_fields.items():
-        if name in ("title", "frontmatter"):
+        if name in ("heading", "frontmatter"):
             continue
         cursor, value = _project_body_field(name, field, body_blocks, cursor, model_class)
         if value is not None:
@@ -265,7 +265,7 @@ def _extract_title_value(heading_text: str, model_class: type[MarkdownHeader]) -
     """Reverse-extract the {value} portion from a TextTemplate'd title."""
     from archetype.markdown.annotations import TextTemplate
 
-    title_field = model_class.model_fields.get("title")
+    title_field = model_class.model_fields.get("heading")
     if not title_field:
         return heading_text
     for m in title_field.metadata or []:

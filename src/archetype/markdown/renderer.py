@@ -35,7 +35,7 @@ def render_template(model_class: type[MarkdownHeader], *, current_level: int = 1
 
     body_level = current_level + 1
     for name, field in model_class.model_fields.items():
-        if name in ("title", "frontmatter"):
+        if name in ("heading", "frontmatter"):
             continue
         rendered = _render_body_field_template(name, field, body_level, model_class)
         if rendered:
@@ -48,13 +48,15 @@ def render_template(model_class: type[MarkdownHeader], *, current_level: int = 1
 def _derive_title_text_for_template(model_class: type[MarkdownHeader]) -> str:
     """Skeleton title text. If title field has TextTemplate, use the literal template
     so the placeholder is visible in the skeleton."""
-    title_field = model_class.model_fields.get("title")
+    title_field = model_class.model_fields.get("heading")
     if title_field:
         from archetype.markdown.annotations import TextTemplate
+        from archetype.markdown.template_model import MarkdownDocument
 
+        placeholder = "{title}" if issubclass(model_class, MarkdownDocument) else "{heading}"
         for m in title_field.metadata or []:
             if isinstance(m, TextTemplate):
-                return m.template
+                return m.template.replace("{value}", placeholder)
     return f"<!-- {model_class.__name__} title -->"
 
 
@@ -189,7 +191,7 @@ def render_instance(
     # 3. Body fields in declaration order at current_level + 1
     body_level = current_level + 1
     for name, field in type(instance).model_fields.items():
-        if name in ("title", "frontmatter"):
+        if name in ("heading", "frontmatter"):
             continue
         value = getattr(instance, name)
         rendered = _render_body_field_instance(name, field, value, body_level, type(instance))
@@ -202,7 +204,7 @@ def render_instance(
 def _resolve_title_text(instance: MarkdownHeader, *, ordinal: int | None) -> str:
     from archetype.markdown.annotations import TextTemplate
 
-    title_field = type(instance).model_fields.get("title")
+    title_field = type(instance).model_fields.get("heading")
     if title_field:
         for m in title_field.metadata or []:
             if isinstance(m, TextTemplate):
@@ -212,9 +214,9 @@ def _resolve_title_text(instance: MarkdownHeader, *, ordinal: int | None) -> str
                         "{ordinal}", str(ordinal if ordinal is not None else 1)
                     )
                 if "{value}" in template:
-                    template = template.replace("{value}", instance.title)
+                    template = template.replace("{value}", instance.heading)
                 return template
-    return instance.title
+    return instance.heading
 
 
 def _render_frontmatter_instance(frontmatter: BaseModel) -> str:

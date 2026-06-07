@@ -20,13 +20,13 @@ class _FrontMatter(BaseModel):
 
 
 class _Assumptions(MarkdownHeader):
-    title: str = "Assumptions"
+    heading: str = "Assumptions"
     items: Annotated[list[str], AsBulletList()]
 
 
 class _FeatureDef(MarkdownDocument):
     frontmatter: _FrontMatter | None = None
-    title: str = Field(description="Feature name (renders as the top heading).")
+    heading: str = Field(description="Feature name (renders as the top heading).")
     problem_statement: Annotated[str, AsHeading()] = Field(description="The current pain.")
     assumptions: _Assumptions = Field(description="Truth-claims the design rests on.")
 
@@ -46,7 +46,7 @@ The feature definition has these sections:
 
 ## This run
 
-You are working on **{{ feature.title }}**.
+You are working on **{{ feature.heading }}**.
 
 Problem: {{ feature.problem_statement }}
 
@@ -65,7 +65,7 @@ class TestRenderInstructionsIntegration:
     def test_full_render_against_populated_instance(self):
         feature = _FeatureDef(
             frontmatter=_FrontMatter(slug="auth"),
-            title="Authentication",
+            heading="Authentication",
             problem_statement="Users can't log in.",
             assumptions=_Assumptions(items=["Low traffic", "SSO available"]),
         )

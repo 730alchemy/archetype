@@ -16,36 +16,36 @@ from archetype.markdown.errors import MarkdownTemplateError
 from archetype.markdown.template_model import MarkdownHeader
 
 
-class TestTitleRule:
-    """Every MarkdownHeader subclass must have title:str. Inherited by default;
+class TestHeadingRule:
+    """Every MarkdownHeader subclass must have heading:str. Inherited by default;
     catches accidental override to a non-string type."""
 
-    def test_subclass_inherits_title_passes(self):
+    def test_subclass_inherits_heading_passes(self):
         # No exception at class definition.
         class SimpleHeader(MarkdownHeader):
             pass
 
-    def test_subclass_overrides_title_to_str_passes(self):
+    def test_subclass_overrides_heading_to_str_passes(self):
         from archetype.markdown.annotations import TextTemplate
 
         class SimpleHeader(MarkdownHeader):
-            title: Annotated[str, TextTemplate("X - {value}")]
+            heading: Annotated[str, TextTemplate("X - {value}")]
 
     def test_subclass_overrides_title_to_non_str_raises(self):
-        with pytest.raises(MarkdownTemplateError, match="title"):
+        with pytest.raises(MarkdownTemplateError, match="heading"):
 
             class BrokenHeader(MarkdownHeader):
-                title: int  # type: ignore[assignment]
+                heading: int  # type: ignore[assignment]
 
-    def test_subclass_overrides_title_with_annotated_int_raises(self):
-        """TextTemplate-annotated title is fine when underlying type is str;
+    def test_subclass_overrides_heading_with_annotated_int_raises(self):
+        """TextTemplate-annotated heading is fine when underlying type is str;
         annotating a non-str type should still raise."""
         from archetype.markdown.annotations import TextTemplate
 
-        with pytest.raises(MarkdownTemplateError, match="title"):
+        with pytest.raises(MarkdownTemplateError, match="heading"):
 
             class BrokenHeader(MarkdownHeader):
-                title: Annotated[int, TextTemplate("{value}")]  # type: ignore[arg-type]
+                heading: Annotated[int, TextTemplate("{value}")]  # type: ignore[arg-type]
 
 
 class TestMetaValidationFiresWithFullFields:
@@ -66,7 +66,7 @@ class TestMetaValidationFiresWithFullFields:
 
         # The hook fires at class definition; body field must be visible.
         assert "extra_field" in observed["fields"]
-        assert "title" in observed["fields"]
+        assert "heading" in observed["fields"]
 
 
 class TestBodyOrderRule:
@@ -161,7 +161,7 @@ class TestFrontmatterRule:
         with pytest.raises(MarkdownTemplateError, match="frontmatter"):
 
             class BadDoc(MarkdownDocument):
-                frontmatter: FmSchema  # missing | None — required type union
+                frontmatter: FmSchema  # type: ignore[override]  # missing | None — required type union
 
 
 class TestTypeCompatibilityRule:
@@ -215,14 +215,14 @@ class TestTypeCompatibilityRule:
 
 
 class TestTextTemplateCompatibility:
-    """TextTemplate has two valid contexts: MarkdownHeader.title (str) and
+    """TextTemplate has two valid contexts: MarkdownHeader.heading (str) and
     list[MarkdownHeader-subclass] wrapper. All other uses raise."""
 
-    def test_text_template_on_title_passes(self):
+    def test_text_template_on_heading_passes(self):
         from archetype.markdown.annotations import TextTemplate
 
         class WithTemplate(MarkdownHeader):
-            title: Annotated[str, TextTemplate("Section {value}")]
+            heading: Annotated[str, TextTemplate("Section {value}")]
 
     def test_text_template_on_list_of_markdown_header_passes(self):
         from archetype.markdown.annotations import TextTemplate
