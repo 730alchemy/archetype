@@ -24,7 +24,6 @@ from archetype.markdown import (
     MarkdownDocument,
     MarkdownHeader,
     TextTemplate,
-    generate_contract,
     parse_markdown_as,
     render_markdown,
 )
@@ -57,13 +56,13 @@ class CodeReview(MarkdownDocument):
 
 console.print(
     "\n[bold]YAML frontmatter — structured metadata on a MarkdownDocument[/bold]\n\n"
-    "[dim]Step 1:[/dim] Define a [cyan]BaseModel[/cyan] for the frontmatter schema.\n"
-    "[dim]Step 2:[/dim] Declare [cyan]frontmatter: FrontmatterModel | None = None[/cyan]"
-    " as the first field on a [cyan]MarkdownDocument[/cyan] subclass.\n"
-    "[dim]Step 3:[/dim] Create a Pydantic model instance with data.\n"
-    "[dim]Step 4:[/dim] Call [cyan]render_markdown()[/cyan] — frontmatter renders as a YAML"
+    "[dim]Step 1:[/dim] Define [cyan]ReviewMeta[/cyan] as a [cyan]BaseModel[/cyan] for the"
+    " frontmatter schema and declare [cyan]frontmatter: ReviewMeta | None = None[/cyan] as the"
+    " first field on a [cyan]MarkdownDocument[/cyan] subclass.\n"
+    "[dim]Step 2:[/dim] Create a Pydantic model instance with data.\n"
+    "[dim]Step 3:[/dim] Call [cyan]render_markdown()[/cyan] — frontmatter renders as a YAML"
     " block.\n"
-    "[dim]Step 5:[/dim] Call [cyan]parse_markdown_as()[/cyan] to parse the markdown back into"
+    "[dim]Step 4:[/dim] Call [cyan]parse_markdown_as()[/cyan] to parse the markdown back into"
     " a Pydantic model instance — frontmatter is recovered as a typed object.\n"
 )
 console.input("[dim]Press Enter to see the model...[/dim]")
@@ -82,13 +81,7 @@ console.print(
     )
 )
 
-console.input("\n[dim]Press Enter to see the markdown contract...[/dim]")
-
-console.print()
-console.print(Rule("markdown contract"))
-console.print(Syntax(generate_contract(CodeReview), "text", theme="monokai"))
-
-console.input("[dim]Press Enter to see the Pydantic model instance...[/dim]")
+console.input("\n[dim]Press Enter to see the Pydantic model instance...[/dim]")
 
 review = CodeReview(
     frontmatter=ReviewMeta(
@@ -137,7 +130,7 @@ console.print()
 console.print(Rule("result"))
 console.print(
     Syntax(
-        "# review is the Pydantic model instance we created in step 3\n"
+        "# review is the Pydantic model instance we created in step 2\n"
         "rendered = render_markdown(review)\n"
         "\n"
         "recovered = parse_markdown_as(rendered, CodeReview)\n"

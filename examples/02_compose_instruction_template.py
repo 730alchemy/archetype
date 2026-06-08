@@ -104,7 +104,7 @@ console.input("\n[dim]Press Enter to see the Jinja instruction template...[/dim]
 
 console.print()
 console.print(Rule("instruction template"))
-console.print(Syntax(INSTRUCTION_TEMPLATE, "text", theme="monokai"))
+console.print(Syntax(INSTRUCTION_TEMPLATE, "jinja", theme="monokai"))
 
 console.input("\n[dim]Press Enter to see the resolved agent instructions...[/dim]")
 

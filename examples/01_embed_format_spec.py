@@ -63,8 +63,8 @@ console.print(
     "\n[bold]Embedding a markdown contract in an LLM system prompt[/bold]\n\n"
     "[dim]Step 1:[/dim] Declare a Pydantic model that defines the markdown contract.\n"
     "[dim]Step 2:[/dim] Call [cyan]generate_contract()[/cyan] to produce the contract string.\n"
-    "[dim]Step 3:[/dim] Embed the contract in a system prompt — the LLM must produce or consume"
-    " exactly that structure.\n"
+    "[dim]Step 3:[/dim] Embed the contract in a system prompt using a plain f-string.\n"
+    "[dim]Step 4:[/dim] The LLM must produce or consume exactly that structure.\n"
 )
 console.input("[dim]Press Enter to see the model code that defines the markdown contract...[/dim]")
 
@@ -78,7 +78,23 @@ console.print(Syntax(model_code, "python", theme="monokai"))
 
 contract = generate_contract(SecurityAuditReport)
 
-console.input("\n[dim]Press Enter to see the contract embedded in a system prompt...[/dim]")
+console.input("\n[dim]Press Enter to see the system prompt template...[/dim]")
+
+SYSTEM_PROMPT_TEMPLATE = """\
+system_prompt = f\"\"\"You are a security auditor. Analyse the code provided by the user
+and produce a security audit report.
+
+You MUST follow this markdown contract exactly:
+
+{contract}
+
+Do not add any sections not listed above. Do not omit any sections.\"\"\""""
+
+console.print()
+console.print(Rule("system prompt template"))
+console.print(Syntax(SYSTEM_PROMPT_TEMPLATE, "python", theme="monokai"))
+
+console.input("\n[dim]Press Enter to see the rendered system prompt...[/dim]")
 
 # --- How to embed it in a system prompt ---
 
