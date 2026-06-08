@@ -4,16 +4,12 @@ resolve() renders a Jinja template against a context. Two globals are
 available inside every template:
 
   - generate_contract(ModelClass)  — the markdown contract string
-  - template_fields(ModelClass)    — heading and description for each section
-
-template_fields() skips non-heading fields (AsCodeBlock, AsBulletList, etc.)
-and returns only the fields that produce headings in the rendered document.
-This means you can pass the real contract model directly — no separate
-guidance model needed.
+  - template_fields(ModelClass)    — list of (heading, description) for each
+                                     heading-shaped field in the model
 
 This example shows two patterns used together:
-  1. Embed the markdown contract via generate_contract.
-  2. Inject a prose section briefing via template_fields on the same model.
+  1. Inject a prose section briefing via template_fields.
+  2. Embed the markdown contract via generate_contract.
 """
 
 import inspect
