@@ -1,5 +1,10 @@
 # Archetype
 
+[![PyPI](https://img.shields.io/pypi/v/archetype-md)](https://pypi.org/project/archetype-md/)
+[![CI](https://github.com/monkeynaut-ai/archetype/actions/workflows/ci.yml/badge.svg)](https://github.com/monkeynaut-ai/archetype/actions/workflows/ci.yml)
+[![Python versions](https://img.shields.io/pypi/pyversions/archetype-md)](https://pypi.org/project/archetype-md/)
+[![License: MIT](https://img.shields.io/pypi/l/archetype-md)](https://github.com/monkeynaut-ai/archetype/blob/main/LICENSE)
+
 Type-safe markdown at every agent boundary.
 
 Archetype gives you the tools — backed by Pydantic models — to validate data at agent boundaries and guide agent behavior. In agentic systems, structured data moves between agents as LLM-generated markdown — patient assessments, contract analyses, audit findings, software designs. Because this data is generated and non-deterministic, producers and consumers diverge silently: a required section gets dropped, a heading gets renamed, a field comes back in the wrong format. Nothing catches it, so the error propagates through the system.
