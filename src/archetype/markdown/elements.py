@@ -28,7 +28,7 @@ class MarkdownKind(StrEnum):
 class MarkdownHeading(BaseModel):
     """A parsed markdown heading and its scoped body content.
 
-    `text` is the heading's title text (without the `#` prefix).
+    `text` is the heading text (without the `#` prefix).
     `body` is everything inside the heading's scope, recursively parsed
     into `BlockElement` instances. Note: heading level is intentionally
     NOT carried on this element; level is an AST concern used only by
@@ -55,7 +55,7 @@ class MarkdownCodeBlock(BaseModel):
 
 class MarkdownTableRow(BaseModel):
     """One row of a parsed markdown table. Cells are flat strings; rich
-    inline content within cells is flattened to plain text in Phase 1."""
+    inline content within cells is flattened to plain text."""
 
     cells: list[str]
 
@@ -74,7 +74,7 @@ class MarkdownTable(BaseModel):
 
 class MarkdownBulletList(BaseModel):
     """A parsed unordered (bullet) list. Items are flat strings; nested lists
-    are not supported in Phase 1."""
+    are not supported."""
 
     kind: Literal[MarkdownKind.BULLET_LIST] = MarkdownKind.BULLET_LIST
     items: list[str]
@@ -82,7 +82,7 @@ class MarkdownBulletList(BaseModel):
 
 class MarkdownNumberedList(BaseModel):
     """A parsed ordered (numbered) list. Items are flat strings; nested lists
-    are not supported in Phase 1."""
+    are not supported."""
 
     kind: Literal[MarkdownKind.NUMBERED_LIST] = MarkdownKind.NUMBERED_LIST
     items: list[str]

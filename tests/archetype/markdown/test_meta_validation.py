@@ -31,7 +31,7 @@ class TestHeadingRule:
         class SimpleHeader(MarkdownHeader):
             heading: Annotated[str, TextTemplate("X - {value}")]
 
-    def test_subclass_overrides_title_to_non_str_raises(self):
+    def test_subclass_overrides_heading_to_non_str_raises(self):
         with pytest.raises(MarkdownTemplateError, match="heading"):
 
             class BrokenHeader(MarkdownHeader):
@@ -71,7 +71,7 @@ class TestMetaValidationFiresWithFullFields:
 
 class TestBodyOrderRule:
     """Within a MarkdownHeader's body, non-heading fields must precede heading
-    fields. Title is exempt (always the container heading); frontmatter is exempt
+    fields. Heading is structural; frontmatter is exempt
     (always rendered at top)."""
 
     def test_only_non_heading_body_fields_passes(self):

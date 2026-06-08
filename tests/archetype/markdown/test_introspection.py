@@ -38,7 +38,7 @@ class TestTemplateOnAsHeadingFields:
 
         (info,) = template_fields(Doc)
 
-        # snake_to_title capitalizes each word (matching Phase 1's renderer convention).
+        # snake_to_title capitalizes each word, matching the renderer convention.
         assert info.heading == "Problem Statement"
 
     def test_description_comes_from_field_description(self):
@@ -70,7 +70,7 @@ class TestTemplateOnAsHeadingFields:
 
 class TestTemplateOnNestedMarkdownHeader:
     """For body fields typed as a MarkdownHeader subclass, template_fields() uses
-    the subclass's `title` field default as the heading text."""
+    the subclass's `heading` field default as the heading text."""
 
     def test_nested_header_uses_subclass_heading_default(self):
         class NestedSection(MarkdownHeader):
@@ -85,8 +85,8 @@ class TestTemplateOnNestedMarkdownHeader:
         assert info.heading == "Desired outcomes"
         assert info.description == "A nested section."
 
-    def test_nested_header_without_title_default_raises(self):
-        """If the nested MarkdownHeader subclass lacks a title default,
+    def test_nested_header_without_heading_default_raises(self):
+        """If the nested MarkdownHeader subclass lacks a heading default,
         template_fields() cannot derive a heading — raises ValueError."""
 
         class NestedSection(MarkdownHeader):
@@ -100,16 +100,16 @@ class TestTemplateOnNestedMarkdownHeader:
 
 
 class TestTemplateSkipsStructuralFields:
-    """template_fields() must skip 'title' and 'frontmatter' — they are the document's
+    """template_fields() must skip 'heading' and 'frontmatter' — they are the document's
     structural heading and metadata, not body sections."""
 
-    def test_title_is_skipped(self):
+    def test_heading_is_skipped(self):
         class Doc(MarkdownHeader):
             summary: Annotated[str, AsHeading()] = Field(description="Summary.")
 
         result = template_fields(Doc)
 
-        # Only 'summary' should appear; 'title' (inherited from MarkdownHeader) is skipped.
+        # Only 'summary' should appear; 'heading' (inherited from MarkdownHeader) is skipped.
         assert len(result) == 1
         assert result[0].heading == "Summary"
 
@@ -185,7 +185,7 @@ class TestTemplateOnMarkdownDocumentSubclass:
     """template_fields() works on MarkdownDocument subclasses too — same semantics
     as MarkdownHeader, with the inherited frontmatter field also skipped."""
 
-    def test_markdown_document_frontmatter_and_title_skipped(self):
+    def test_markdown_document_frontmatter_and_heading_skipped(self):
         class FM(BaseModel):
             slug: str
 

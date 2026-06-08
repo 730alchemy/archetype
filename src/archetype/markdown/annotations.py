@@ -18,7 +18,7 @@ from dataclasses import dataclass
 class AsHeading:
     """Render a `str` body field as a heading whose body is the field value
     (raw markdown text). Heading text is derived from the field name
-    (snake_case → Title Case). No parameters in Phase 1."""
+    (snake_case → Title Case)."""
 
 
 @dataclass(frozen=True)
@@ -51,7 +51,7 @@ class TextTemplate:
     """Format a heading-text field using a template.
 
     Two contexts:
-      - On a `MarkdownHeader.title` field (str): `{value}` substitutes the
+      - On a `MarkdownHeader.heading` field (str): `{value}` substitutes the
         field value; `{ordinal}` substitutes the 1-based list index when
         the parent is a list.
       - On a heading-introducing list-wrapper field (list[MarkdownHeader-subclass]):

@@ -50,7 +50,7 @@ def project_to_model[T: MarkdownHeader](
         first_kind = type(doc.blocks[0]).__name__ if doc.blocks else "empty document"
         raise MarkdownValidationError(
             f"Expected a top-level heading at start of document for "
-            f"{model_class.__name__}.title; found {first_kind}."
+            f"{model_class.__name__}.heading; found {first_kind}."
         )
     top_heading = doc.blocks[0]
     raw_title = _extract_title_value(top_heading.text, model_class)
@@ -181,7 +181,7 @@ def _find_next_heading(
     # write sentence-case headings (`## Problem statement`) while the
     # model's `snake_to_title` default produces Title Case (`Problem
     # Statement`). Treating these as equivalent at parse time avoids
-    # rejecting otherwise-correct documents over casing. The title value
+    # rejecting otherwise-correct documents over casing. The heading value
     # stored on the resulting instance preserves the source casing, so
     # re-render reproduces whatever form the author chose.
     target = expected_text.casefold() if expected_text is not None else None
@@ -290,7 +290,7 @@ def _extract_basemodel_arg(field_type: object) -> type[BaseModel] | None:
 
 
 def _extract_title_value(heading_text: str, model_class: type[MarkdownHeader]) -> str:
-    """Reverse-extract the {value} portion from a TextTemplate'd title."""
+    """Reverse-extract the {value} portion from a templated heading."""
     from archetype.markdown.annotations import TextTemplate
 
     title_field = model_class.model_fields.get("heading")

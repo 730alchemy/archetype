@@ -28,6 +28,19 @@ pip install archetype-md
 Given this model:
 
 ```python
+from typing import Annotated
+
+from archetype.markdown import (
+    AsBulletList,
+    AsHeading,
+    MarkdownDocument,
+    MarkdownHeader,
+    TextTemplate,
+    generate_contract,
+    parse_markdown_as,
+    render_markdown,
+)
+
 class Finding(MarkdownHeader):
     heading: Annotated[str, TextTemplate("Finding {ordinal} — {value}")]
     recommendations: Annotated[list[str], AsBulletList()]
@@ -94,7 +107,7 @@ Typed markdown documents backed by Pydantic models.
 | `render_markdown(obj)` | Render a populated instance to markdown |
 | `parse_markdown_as(text, cls)` | Parse markdown and return a validated instance |
 | `template_fields(cls)` | Return heading text and description for each heading-shaped field; non-heading fields are skipped |
-| `extract_subtree(text, heading)` | Extract a named section from markdown text |
+| `extract_subtree(text, *, heading_level, title_match)` | Extract a uniquely named heading subtree and rebase it to level 1 |
 
 **Field annotations** (attached via `Annotated[T, ...]`):
 

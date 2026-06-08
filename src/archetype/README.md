@@ -48,12 +48,12 @@ from archetype.markdown import (
 )
 
 class Finding(MarkdownHeader):
-    title: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
+    heading: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
     description: Annotated[str, AsHeading()]
     evidence: Annotated[list[str], AsBulletList()]
 
 class Review(MarkdownDocument):
-    title: Annotated[str, TextTemplate("{value}")]
+    heading: Annotated[str, TextTemplate("{value}")]
     summary: Annotated[str, AsHeading()]
     findings: list[Finding]
 ```
@@ -132,10 +132,10 @@ of it. There is no parallel source of truth for any of these arrows.
                                           │
        ┌──────────────────┬───────────────┼───────────────┬──────────────────┐
        │                  │               │               │                  │
-       ▼ drives           ▼ drives        ▼ controls      ▼ validates        ▼ exposes
+       ▼ drives           ▼ drives        ▼ parses        ▼ validates        ▼ exposes
 ┌─────────────┐  ┌─────────────────┐ ┌──────────────┐ ┌─────────────┐ ┌────────────────┐
-│ render_     │  │ render_markdown │ │ validate_    │ │ Pydantic    │ │ template_      │
-│ template()  │  │ ()              │ │ markdown()   │ │ field +     │ │ fields() →     │
+│ generate_   │  │ render_markdown │ │ parse_       │ │ Pydantic    │ │ template_      │
+│ contract()  │  │ ()              │ │ markdown_as()│ │ field +     │ │ fields() →     │
 │             │  │                 │ │              │ │ structural  │ │ FieldInfo for  │
 │ skeleton    │  │ instance →      │ │ markdown →   │ │ meta-       │ │ each heading   │
 │ markdown    │  │ markdown        │ │ instance     │ │ validation  │ │ (.heading,     │
@@ -165,8 +165,8 @@ of it. There is no parallel source of truth for any of these arrows.
                   │
                   ▼ supports
         ┌──────────────────────────────────────┐
-        │  extract_subtree() — slice a typed   │
-        │  subtree out of a larger document    │
+        │  extract_subtree() — slice a heading │
+        │  subtree out of markdown text        │
         └──────────────────────────────────────┘
 ```
 
@@ -179,7 +179,7 @@ of it. There is no parallel source of truth for any of these arrows.
 | `parse_markdown_as`    | field types, annotations, structural rules            | typed instance (or `MarkdownValidationError`) |
 | Meta-validation hook   | class structure at definition time                    | early `MarkdownError` on malformed templates |
 | `template_fields`      | heading-introducing fields and their docstrings       | `FieldInfo(heading, description)` stream |
-| `extract_subtree`      | nested `MarkdownHeader` types                         | typed slice of a larger document        |
+| `extract_subtree`      | markdown text, `heading_level`, `title_match`          | markdown fragment rebased to heading level 1 |
 | `Model.model_json_schema()` | field types (Pydantic-native)                    | JSON Schema for structured-output APIs  |
 | `resolve()` (Jinja)    | the model, via `template_fields` / `generate_contract`  | fully-resolved instruction string       |
 

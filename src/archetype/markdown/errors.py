@@ -9,7 +9,7 @@ class MarkdownError(Exception):
 
 class MarkdownTemplateError(MarkdownError, TypeError):
     """Raised at class-definition time when a MarkdownHeader/MarkdownDocument
-    subclass violates a structural rule (title required, body order, frontmatter
+    subclass violates a structural rule (heading required, body order, frontmatter
     placement, type-annotation compatibility).
 
     Inherits from TypeError because the violation is a class-construction problem,

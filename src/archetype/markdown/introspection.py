@@ -13,14 +13,13 @@ or any other code that needs to enumerate a model's sections without walking
     - **{{ field.heading }}** — {{ field.description }}
     {% endfor %}
 
-Supported field shapes (Slice 1):
+Supported field shapes:
   - ``Annotated[str, AsHeading()]`` — heading text is Title Case of field name.
   - Field typed as a ``MarkdownHeader`` subclass — heading text is the
-    subclass's ``title`` field default value.
+    subclass's ``heading`` field default value.
 
-Structural fields ``title`` and ``frontmatter`` are skipped. Any other
-field shape raises ``ValueError`` so the limitation is visible and future
-extensions are deliberate.
+Structural fields ``heading`` and ``frontmatter`` are skipped. Fields that do
+not introduce headings are omitted.
 """
 
 from __future__ import annotations
@@ -87,8 +86,8 @@ def _resolve_heading(
     # Shape 2: field typed as a MarkdownHeader subclass → subclass's heading default.
     field_type = getattr(field, "annotation", None)
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
-        title_field = field_type.model_fields.get("heading")
-        if title_field is None or title_field.default is PydanticUndefined:
+        heading_field = field_type.model_fields.get("heading")
+        if heading_field is None or heading_field.default is PydanticUndefined:
             raise ValueError(
                 f"{model_class.__name__}.{field_name} is typed as "
                 f"{field_type.__name__}, which has no default value for its "
@@ -97,7 +96,7 @@ def _resolve_heading(
                 f'a default (e.g. `heading: str = "Section Name"`), or use '
                 f"Annotated[str, AsHeading()] instead."
             )
-        default = title_field.default
+        default = heading_field.default
         if not isinstance(default, str):
             raise ValueError(
                 f"{model_class.__name__}.{field_name}: "

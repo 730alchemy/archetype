@@ -51,8 +51,7 @@ def generate_contract(model_class: type[MarkdownHeader], *, current_level: int =
 
 
 def _derive_title_text_for_template(model_class: type[MarkdownHeader]) -> str:
-    """Skeleton title text. If title field has TextTemplate, use the literal template
-    so the placeholder is visible in the skeleton."""
+    """Derive contract heading text, preserving TextTemplate placeholders."""
     title_field = model_class.model_fields.get("heading")
     if title_field:
         from archetype.markdown.annotations import TextTemplate
