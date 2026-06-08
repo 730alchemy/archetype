@@ -13,7 +13,7 @@ from tests.archetype.markdown.fixtures.sample_models import (
     ReviewerOutput,
 )
 
-from archetype.markdown.annotations import AsTable, TextTemplate
+from archetype.markdown.annotations import AsCodeBlock, AsTable, TextTemplate
 from archetype.markdown.errors import MarkdownValidationError
 from archetype.markdown.parser import parse_markdown_as
 from archetype.markdown.renderer import render_markdown
@@ -106,6 +106,34 @@ class TestValidateMarkdown:
         recovered = parse_markdown_as(render_markdown(original), RepeatedHeading)
 
         assert recovered == original
+
+    def test_table_column_mismatch_raises_markdown_validation_error(self):
+        class Row(BaseModel):
+            name: str
+            value: str
+
+        class WithTable(MarkdownHeader):
+            items: Annotated[list[Row], AsTable()]
+
+        bad = "# Doc\n\n| Name | Wrong |\n|---|---|\n| foo | bar |\n"
+
+        with pytest.raises(MarkdownValidationError, match=r"column mismatch"):
+            parse_markdown_as(bad, WithTable)
+
+    def test_missing_required_element_raises_markdown_validation_error(self):
+        class WithCode(MarkdownHeader):
+            snippet: Annotated[str, AsCodeBlock()]
+
+        with pytest.raises(MarkdownValidationError, match=r"snippet"):
+            parse_markdown_as("# Heading\n\nNo code block here.\n", WithCode)
+
+    def test_text_template_with_no_value_placeholder(self):
+        class FixedHeading(MarkdownHeader):
+            heading: Annotated[str, TextTemplate("Fixed Title")]
+
+        instance = parse_markdown_as("# Fixed Title\n", FixedHeading)
+
+        assert instance.heading == "Fixed Title"
 
     def test_model_field_constraint_raises_markdown_validation_error(self):
         class ConstrainedHeading(MarkdownHeader):
