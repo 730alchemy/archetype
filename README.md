@@ -7,6 +7,8 @@
 
 Type-safe markdown at every agent boundary.
 
+Run the interactive examples in [`examples/`](https://github.com/monkeynaut-ai/archetype/tree/main/examples) to better understand the capabilities and benefits of Archetype.
+
 Archetype gives you the tools — backed by Pydantic models — to validate data at agent boundaries and guide agent behavior. In agentic systems, structured data moves between agents as LLM-generated markdown — patient assessments, contract analyses, audit findings, software designs. Because this data is generated and non-deterministic, producers and consumers diverge silently: a required section gets dropped, a heading gets renamed, a field comes back in the wrong format. Nothing catches it, so the error propagates through the system.
 
 Archetype makes the Pydantic model the contract at every agent boundary. At boundaries, it injects the markdown contract into agent instructions and validates markdown the agent generates. Inside agents, field descriptions from the model provide semantic context in prompts. One change to the Pydantic model propagates to every touchpoint of the corresponding markdown file.
