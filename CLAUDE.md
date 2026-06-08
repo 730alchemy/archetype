@@ -87,8 +87,10 @@ tests/archetype/     — mirrors src layout
 
 - `pdm install`: install dependencies
 - `pdm run test`: run tests
-- `pdm run lint`: lint and autofix
+- `pdm run lint`: check lint without modifying files
+- `pdm run lint-fix`: apply automatic lint fixes
 - `pdm run format`: format
+- `pdm run check-format`: check formatting without modifying files
 - `pdm run typecheck`: run Pyright
 
 ## Data Model Conventions
