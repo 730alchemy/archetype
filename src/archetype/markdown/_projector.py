@@ -77,7 +77,13 @@ def project_to_model[T: MarkdownHeader](
         if value is not None:
             instance_kwargs[name] = value
 
-    return model_class(**instance_kwargs)
+    try:
+        return model_class(**instance_kwargs)
+    except _PydanticValidationError as exc:
+        raise MarkdownValidationError(
+            f"{model_class.__name__}: parsed markdown does not match the model schema. "
+            f"{_format_validation_errors(exc)}"
+        ) from exc
 
 
 def _project_body_field(
@@ -128,12 +134,19 @@ def _project_body_field(
                 f"Expected columns {expected_cols}, found {t.columns}. "  # type: ignore[attr-defined]
                 f"Columns must match the inner model's field names in declaration order."
             )
-        rows = [
-            inner.model_validate(
-                dict(zip(_field_keys(inner), row.cells, strict=False))  # type: ignore[attr-defined]
-            )
-            for row in t.rows  # type: ignore[attr-defined]
-        ]
+        rows = []
+        for row_number, row in enumerate(t.rows, start=1):  # type: ignore[attr-defined]
+            try:
+                parsed_row = inner.model_validate(
+                    dict(zip(_field_keys(inner), row.cells, strict=False))
+                )
+            except _PydanticValidationError as exc:
+                raise MarkdownValidationError(
+                    f"{model_class.__name__}.{name} row {row_number}: "
+                    f"content does not match the {inner.__name__} schema. "
+                    f"{_format_validation_errors(exc)}"
+                ) from exc
+            rows.append(parsed_row)
         return idx + 1, rows
 
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
@@ -217,6 +230,16 @@ def _field_keys(model: type[BaseModel]) -> list[str]:
     return list(model.model_fields.keys())
 
 
+def _format_validation_errors(exc: _PydanticValidationError) -> str:
+    """Render Pydantic errors compactly while preserving field locations."""
+    messages = []
+    for error in exc.errors(include_url=False):
+        location = ".".join(str(part) for part in error["loc"])
+        prefix = f"{location}: " if location else ""
+        messages.append(f"{prefix}{error['msg']}")
+    return "; ".join(messages)
+
+
 def _serialize_block_body(heading: MarkdownHeading, *, _depth: int = 0) -> str:
     """Serialize the body of a heading back to markdown text. Used to reconstitute
     an `Annotated[str, AsHeading()]` field's value.
@@ -284,9 +307,15 @@ def _reverse_text_template(template: str, heading_text: str) -> str:
 
     if "{value}" not in template:
         return heading_text
-    pattern = re.escape(template)
-    pattern = pattern.replace(re.escape("{value}"), r"(?P<value>.*)")
-    pattern = pattern.replace(re.escape("{ordinal}"), r"\d+")
+
+    def escape_literal(text: str) -> str:
+        return re.escape(text).replace(re.escape("{ordinal}"), r"\d+")
+
+    literal_parts = template.split("{value}")
+    pattern = escape_literal(literal_parts[0]) + r"(?P<value>.*)"
+    for literal in literal_parts[1:-1]:
+        pattern += escape_literal(literal) + r"(?P=value)"
+    pattern += escape_literal(literal_parts[-1])
     m = re.fullmatch(pattern, heading_text)
     if not m:
         return heading_text

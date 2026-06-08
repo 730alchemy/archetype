@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from typing import Annotated
+
 import pytest
+from pydantic import BaseModel, Field
 from tests.archetype.markdown.fixtures.sample_models import (
     Finding,
     HeaderWithSummary,
@@ -10,9 +13,11 @@ from tests.archetype.markdown.fixtures.sample_models import (
     ReviewerOutput,
 )
 
+from archetype.markdown.annotations import AsTable, TextTemplate
 from archetype.markdown.errors import MarkdownValidationError
 from archetype.markdown.parser import parse_markdown_as
 from archetype.markdown.renderer import render_markdown
+from archetype.markdown.template_model import MarkdownHeader
 
 
 class TestValidateMarkdown:
@@ -65,3 +70,49 @@ class TestValidateMarkdown:
         )
         with pytest.raises(MarkdownValidationError, match=r"[Ff]rontmatter"):
             parse_markdown_as(bad, ReviewerOutput)
+
+    @pytest.mark.parametrize("yaml_value", ["hello", "- one\n- two"])
+    def test_non_mapping_frontmatter_raises_markdown_validation_error(self, yaml_value: str):
+        bad = f"---\n{yaml_value}\n---\n\n# Doc\n\n## Summary\n\ntext\n"
+
+        with pytest.raises(
+            MarkdownValidationError,
+            match=r"Frontmatter.*mapping",
+        ):
+            parse_markdown_as(bad, HeaderWithSummary)
+
+    def test_invalid_table_cell_raises_field_localized_markdown_validation_error(self):
+        class Component(BaseModel):
+            name: str
+            replicas: int
+
+        class Inventory(MarkdownHeader):
+            components: Annotated[list[Component], AsTable()]
+
+        bad = "# Inventory\n\n| Name | Replicas |\n|---|---|\n| api | not-an-integer |\n"
+
+        with pytest.raises(
+            MarkdownValidationError,
+            match=r"Inventory\.components row 1.*replicas",
+        ):
+            parse_markdown_as(bad, Inventory)
+
+    def test_repeated_value_placeholder_round_trips(self):
+        class RepeatedHeading(MarkdownHeader):
+            heading: Annotated[str, TextTemplate("{value} / {value}")]
+
+        original = RepeatedHeading(heading="Summary")
+
+        recovered = parse_markdown_as(render_markdown(original), RepeatedHeading)
+
+        assert recovered == original
+
+    def test_model_field_constraint_raises_markdown_validation_error(self):
+        class ConstrainedHeading(MarkdownHeader):
+            heading: str = Field(min_length=10)
+
+        with pytest.raises(
+            MarkdownValidationError,
+            match=r"ConstrainedHeading.*heading",
+        ):
+            parse_markdown_as("# Short\n", ConstrainedHeading)
