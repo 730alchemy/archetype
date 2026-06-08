@@ -93,7 +93,9 @@ original = FeatureSpec(
 
 console.print()
 console.print(Rule("populated instance"))
-console.print(Syntax(repr(original), "python", theme="monokai", word_wrap=True))
+console.print(
+    Syntax(original.model_dump_json(indent=2, exclude_none=True), "json", theme="monokai")
+)
 
 console.input("\n[dim]Press Enter to see the rendered markdown...[/dim]")
 
