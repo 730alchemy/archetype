@@ -47,9 +47,10 @@ class FeatureSpec(MarkdownDocument):
 console.print(
     "\n[bold]Round-trip integrity — render and parse are inverses[/bold]\n\n"
     "[dim]Step 1:[/dim] Declare a Pydantic model that defines the markdown contract.\n"
-    "[dim]Step 2:[/dim] Create a model instance with data.\n"
+    "[dim]Step 2:[/dim] Create a Pydantic model instance with data.\n"
     "[dim]Step 3:[/dim] Call [cyan]render_instance()[/cyan] to produce markdown.\n"
-    "[dim]Step 4:[/dim] Call [cyan]validate_markdown()[/cyan] to parse it back.\n"
+    "[dim]Step 4:[/dim] Call [cyan]validate_markdown()[/cyan] to parse the markdown back"
+    " into a Pydantic model instance.\n"
     "[dim]Step 5:[/dim] The recovered instance is identical to the original.\n"
 )
 console.input("[dim]Press Enter to see the model...[/dim]")
@@ -64,7 +65,7 @@ console.print(
     )
 )
 
-console.input("\n[dim]Press Enter to see the populated instance...[/dim]")
+console.input("\n[dim]Press Enter to see the Pydantic model instance...[/dim]")
 
 original = FeatureSpec(
     heading="Offline Mode",
@@ -93,7 +94,7 @@ original = FeatureSpec(
 )
 
 console.print()
-console.print(Rule("model instance"))
+console.print(Rule("Pydantic model instance"))
 console.print(
     Syntax(original.model_dump_json(indent=2, exclude_none=True), "json", theme="monokai")
 )
@@ -104,9 +105,12 @@ rendered = render_instance(original)
 
 console.print()
 console.print(Rule("rendered markdown"))
-print(rendered)
+console.print(Syntax(rendered, "text", theme="monokai"))
 
-console.input("[dim]Press Enter to parse the markdown back and verify round-trip...[/dim]")
+console.input(
+    "[dim]Press Enter to parse the markdown back into a Pydantic model instance"
+    " and verify round-trip...[/dim]"
+)
 
 recovered = validate_markdown(rendered, FeatureSpec)
 
@@ -115,7 +119,17 @@ assert recovered == original, "Round-trip failed — instances are not equal."
 console.print()
 console.print(Rule("result"))
 console.print(
-    "\n[green]✓[/green] [bold]Round-trip verified.[/bold] The recovered instance is"
-    " identical to the original.\n"
+    Syntax(
+        "# original is the Pydantic model instance we created in step 2\n"
+        "rendered = render_instance(original)\n"
+        "\n"
+        "recovered = validate_markdown(rendered, FeatureSpec)\n"
+        "\n"
+        "recovered == original",
+        "python",
+        theme="monokai",
+    )
 )
-console.print("[dim]recovered == original[/dim]  →  [green]True[/green]\n")
+console.print(
+    "\n[green]✓[/green] [bold]True[/bold] — the recovered instance is identical to the original.\n"
+)
