@@ -60,9 +60,17 @@ def _split_frontmatter(markdown: str) -> tuple[MarkdownFrontmatter | None, str]:
     raw_yaml = markdown[4 : end + 1]
     rest = markdown[end + len("\n---\n") :]
     try:
-        parsed = yaml.safe_load(raw_yaml) or {}
+        loaded = yaml.safe_load(raw_yaml)
     except yaml.YAMLError as exc:
         raise MarkdownValidationError(f"Frontmatter YAML is malformed: {exc}") from exc
+    if loaded is None:
+        parsed = {}
+    elif not isinstance(loaded, dict):
+        raise MarkdownValidationError(
+            f"Frontmatter must decode to a YAML mapping; found {type(loaded).__name__}."
+        )
+    else:
+        parsed = loaded
     return MarkdownFrontmatter(raw_yaml=raw_yaml, parsed=parsed), rest
 
 
