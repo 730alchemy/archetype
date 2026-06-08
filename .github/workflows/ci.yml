@@ -66,13 +66,17 @@ jobs:
 
   test-gate:
     name: test
-    needs: [test]
+    needs: [quality, test]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - run: |
+          if [[ "${{ needs.quality.result }}" != "success" ]]; then
+            echo "Quality checks failed"
+            exit 1
+          fi
           if [[ "${{ needs.test.result }}" != "success" ]]; then
-            echo "Matrix test failed"
+            echo "Matrix tests failed"
             exit 1
           fi
 
