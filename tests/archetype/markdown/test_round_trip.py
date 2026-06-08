@@ -142,6 +142,51 @@ class TestRoundTrip:
 
         assert recovered == original
 
+    def test_single_nested_header_field_round_trips(self):
+        class Address(MarkdownHeader):
+            street: Annotated[str, AsHeading()]
+
+        class Person(MarkdownHeader):
+            address: Address
+
+        original = Person(
+            heading="Alice",
+            address=Address(heading="Home Address", street="123 Main St"),
+        )
+        recovered = parse_markdown_as(render_markdown(original), Person)
+
+        assert recovered.address.heading == "Home Address"
+        assert "123 Main St" in recovered.address.street
+
+    def test_as_heading_body_with_code_block_is_serialized(self):
+        class WithCode(MarkdownHeader):
+            section: Annotated[str, AsHeading()]
+
+        md = "# Doc\n\n## Section\n\n```python\nprint('hello')\n```\n"
+        instance = parse_markdown_as(md, WithCode)
+
+        assert "print('hello')" in instance.section
+
+    def test_as_heading_body_with_bullet_list_is_serialized(self):
+        class WithList(MarkdownHeader):
+            section: Annotated[str, AsHeading()]
+
+        md = "# Doc\n\n## Section\n\n- item one\n- item two\n"
+        instance = parse_markdown_as(md, WithList)
+
+        assert "item one" in instance.section
+        assert "item two" in instance.section
+
+    def test_as_heading_body_with_numbered_list_is_serialized(self):
+        class WithList(MarkdownHeader):
+            section: Annotated[str, AsHeading()]
+
+        md = "# Doc\n\n## Section\n\n1. first\n2. second\n"
+        instance = parse_markdown_as(md, WithList)
+
+        assert "first" in instance.section
+        assert "second" in instance.section
+
     def test_table_inside_heading_body_preserves_escaped_pipe(self):
         class Report(MarkdownHeader):
             details: Annotated[str, AsHeading()]
