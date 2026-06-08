@@ -17,7 +17,12 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from archetype.markdown._shared import get_role_annotation, resolve_wrapper_text, snake_to_title
+from archetype.markdown._shared import (
+    escape_table_cell,
+    get_role_annotation,
+    resolve_wrapper_text,
+    snake_to_title,
+)
 from archetype.markdown.errors import MarkdownTemplateError
 
 if TYPE_CHECKING:
@@ -305,6 +310,6 @@ def _render_table_instance(field_type: object, value: list[object]) -> str:
     sep = "|" + "|".join(["---"] * len(column_names)) + "|"
     rows = []
     for item in value:
-        cells = [str(getattr(item, fname)) for fname in inner.model_fields]
+        cells = [escape_table_cell(getattr(item, fname)) for fname in inner.model_fields]
         rows.append("| " + " | ".join(cells) + " |")
     return "\n".join([header, sep, *rows])

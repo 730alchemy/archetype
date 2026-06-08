@@ -11,6 +11,7 @@ from __future__ import annotations
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
 
+from archetype.markdown._shared import escape_table_cell
 from archetype.markdown.errors import MarkdownExtractionError
 
 
@@ -149,7 +150,7 @@ def _render_tokens_to_markdown(tokens: list[Token]) -> str:
             parts.append("| " + " | ".join(header_cells) + " |")
             parts.append(sep)
             for row in data_rows:
-                parts.append("| " + " | ".join(row) + " |")
+                parts.append("| " + " | ".join(escape_table_cell(cell) for cell in row) + " |")
             i += 1  # skip table_close
         else:
             i += 1

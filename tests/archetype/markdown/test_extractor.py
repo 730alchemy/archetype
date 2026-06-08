@@ -92,3 +92,16 @@ class TestExtractSubtreePreservesContent:
         assert "| Path | Lines |" in out
         assert "| a.py | 12 |" in out
         assert "| b.py | 7 |" in out
+
+    def test_extract_preserves_escaped_pipe_in_table_cell(self):
+        md = (
+            "# Top\n\n"
+            "## Section With Table\n\n"
+            "| Name | Owner |\n"
+            "|------|-------|\n"
+            "| api\\|worker | Platform |\n"
+        )
+
+        out = extract_subtree(md, heading_level=2, title_match="Section With Table")
+
+        assert "| api\\|worker | Platform |" in out

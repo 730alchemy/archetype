@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
+from pydantic import BaseModel
 from tests.archetype.markdown.fixtures.sample_models import (
     Finding,
     HeaderWithSummary,
@@ -12,7 +13,7 @@ from tests.archetype.markdown.fixtures.sample_models import (
     SimpleHeader,
 )
 
-from archetype.markdown.annotations import AsHeading
+from archetype.markdown.annotations import AsHeading, AsTable
 from archetype.markdown.parser import parse_markdown_as
 from archetype.markdown.renderer import render_markdown
 from archetype.markdown.template_model import MarkdownHeader
@@ -120,3 +121,36 @@ class TestRoundTrip:
         assert "## Sub-section" in recovered.details
         assert "### Sub-sub-section" in recovered.details
         assert "Deep content." in recovered.details
+
+    def test_table_cells_containing_pipes_round_trip(self):
+        class Component(BaseModel):
+            name: str
+            owner: str
+
+        class Inventory(MarkdownHeader):
+            components: Annotated[list[Component], AsTable()]
+
+        original = Inventory(
+            heading="Service Inventory",
+            components=[
+                Component(name="api|worker", owner="Platform|Infrastructure"),
+                Component(name=r"literal\|separator", owner="Developer Experience"),
+            ],
+        )
+
+        recovered = parse_markdown_as(render_markdown(original), Inventory)
+
+        assert recovered == original
+
+    def test_table_inside_heading_body_preserves_escaped_pipe(self):
+        class Report(MarkdownHeader):
+            details: Annotated[str, AsHeading()]
+
+        original = Report(
+            heading="Service Report",
+            details=("| Name | Owner |\n|---|---|\n| api\\|worker | Platform |"),
+        )
+
+        recovered = parse_markdown_as(render_markdown(original), Report)
+
+        assert recovered == original

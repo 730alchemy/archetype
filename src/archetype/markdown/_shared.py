@@ -35,6 +35,11 @@ def snake_to_title(name: str) -> str:
     return " ".join(word.capitalize() for word in name.split("_"))
 
 
+def escape_table_cell(value: object) -> str:
+    """Escape characters that Markdown treats as table cell delimiters."""
+    return str(value).replace("|", r"\|")
+
+
 def resolve_wrapper_text(field_name: str, field: object) -> str:
     """Resolve the wrapper-heading text for a list[MarkdownHeader-subclass]
     body field. TextTemplate annotation (literal-only on lists; placeholders

@@ -91,6 +91,23 @@ class TestRenderTable:
         assert "| Path | Lines |" in out
         assert "|---|---|" in out
 
+    def test_table_instance_escapes_pipe_in_cell_value(self):
+        class Row(BaseModel):
+            name: str
+            owner: str
+
+        class WithTable(MarkdownHeader):
+            rows: Annotated[list[Row], AsTable()]
+
+        out = render_markdown(
+            WithTable(
+                heading="Inventory",
+                rows=[Row(name="api|worker", owner="Platform")],
+            )
+        )
+
+        assert "| api\\|worker | Platform |" in out
+
 
 class TestRenderHeadingIntroducingFields:
     def test_list_of_finding_template_emits_wrapper_heading(self):

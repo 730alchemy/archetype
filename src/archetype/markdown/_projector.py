@@ -14,7 +14,12 @@ from pydantic import BaseModel
 from pydantic import ValidationError as _PydanticValidationError
 
 from archetype.markdown._ast_normalizer import NormalizedDocument
-from archetype.markdown._shared import get_role_annotation, resolve_wrapper_text, snake_to_title
+from archetype.markdown._shared import (
+    escape_table_cell,
+    get_role_annotation,
+    resolve_wrapper_text,
+    snake_to_title,
+)
 from archetype.markdown.annotations import (
     AsBulletList,
     AsCodeBlock,
@@ -249,7 +254,7 @@ def _serialize_block_body(heading: MarkdownHeading, *, _depth: int = 0) -> str:
 def _serialize_table(t: MarkdownTable) -> str:
     header = "| " + " | ".join(t.columns) + " |"
     sep = "|" + "|".join(["---"] * len(t.columns)) + "|"
-    rows = ["| " + " | ".join(r.cells) + " |" for r in t.rows]
+    rows = ["| " + " | ".join(escape_table_cell(cell) for cell in r.cells) + " |" for r in t.rows]
     return "\n".join([header, sep, *rows])
 
 
