@@ -7,7 +7,7 @@ from archetype.markdown._projector import project_to_model
 from archetype.markdown.template_model import MarkdownHeader
 
 
-def validate_markdown[T: MarkdownHeader](
+def parse_markdown_as[T: MarkdownHeader](
     markdown: str,
     model_class: type[T],
 ) -> T:

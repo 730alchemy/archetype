@@ -42,13 +42,13 @@ class Review(MarkdownDocument):
 contract = generate_contract(Review)
 
 # Parse markdown back into a validated model instance
-review = validate_markdown(produced_markdown, Review)
+review = parse_markdown_as(produced_markdown, Review)
 
 # Render a populated instance back to markdown
-output = render_instance(review)
+output = render_markdown(review)
 ```
 
-A populated document — what `render_instance` produces and `validate_markdown` consumes — looks like this:
+A populated document — what `render_markdown` produces and `parse_markdown_as` consumes — looks like this:
 
 ```markdown
 # Q4 Code Review
@@ -91,8 +91,8 @@ Typed markdown documents backed by Pydantic models.
 | `MarkdownDocument` | Base class for top-level documents (adds optional YAML frontmatter) |
 | `MarkdownHeader` | Base class for heading-shaped sub-documents |
 | `generate_contract(cls)` | Generate the markdown contract — annotated structure with placeholder comments and inline field descriptions |
-| `render_instance(obj)` | Render a populated instance to markdown |
-| `validate_markdown(text, cls)` | Parse markdown and return a validated instance |
+| `render_markdown(obj)` | Render a populated instance to markdown |
+| `parse_markdown_as(text, cls)` | Parse markdown and return a validated instance |
 | `template_fields(cls)` | Return heading text and description for each heading-shaped field; non-heading fields are skipped |
 | `extract_subtree(text, heading)` | Extract a named section from markdown text |
 
@@ -126,7 +126,7 @@ instructions = resolve(
 
 **The model is the contract.** Annotations on fields drive all rendering and parsing behaviour. No separate config, no code generation — change the model, everything updates.
 
-**Strict by default.** `validate_markdown` raises `MarkdownValidationError` with field-localized messages on any mismatch. `resolve` raises on undefined template paths. Silent partial results are not produced.
+**Strict by default.** `parse_markdown_as` raises `MarkdownValidationError` with field-localized messages on any mismatch. `resolve` raises on undefined template paths. Silent partial results are not produced.
 
 ## Development
 

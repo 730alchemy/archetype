@@ -62,17 +62,17 @@ class Review(MarkdownDocument):
 
 ```python
 from archetype.markdown import (
-    generate_contract, render_instance, validate_markdown, template_fields,
+    generate_contract, render_markdown, parse_markdown_as, template_fields,
 )
 
 # Skeleton markdown to embed in an agent's prompt
 template_md = generate_contract(Review)
 
 # Turn an LLM's markdown reply back into a typed instance
-review: Review = validate_markdown(llm_output, Review)
+review: Review = parse_markdown_as(llm_output, Review)
 
 # Re-render an instance to markdown (e.g. as input to a downstream agent)
-markdown = render_instance(review)
+markdown = render_markdown(review)
 
 # Iterate heading metadata for prompt construction
 for field in template_fields(Review):
@@ -134,7 +134,7 @@ of it. There is no parallel source of truth for any of these arrows.
        │                  │               │               │                  │
        ▼ drives           ▼ drives        ▼ controls      ▼ validates        ▼ exposes
 ┌─────────────┐  ┌─────────────────┐ ┌──────────────┐ ┌─────────────┐ ┌────────────────┐
-│ render_     │  │ render_instance │ │ validate_    │ │ Pydantic    │ │ template_      │
+│ render_     │  │ render_markdown │ │ validate_    │ │ Pydantic    │ │ template_      │
 │ template()  │  │ ()              │ │ markdown()   │ │ field +     │ │ fields() →     │
 │             │  │                 │ │              │ │ structural  │ │ FieldInfo for  │
 │ skeleton    │  │ instance →      │ │ markdown →   │ │ meta-       │ │ each heading   │
@@ -175,8 +175,8 @@ of it. There is no parallel source of truth for any of these arrows.
 | Arrow                  | Reads from the model                                  | Produces                                |
 | ---------------------- | ----------------------------------------------------- | --------------------------------------- |
 | `generate_contract`      | field names, annotations, nested types                | skeleton markdown for prompts           |
-| `render_instance`      | instance values + annotations                         | markdown serialization                  |
-| `validate_markdown`    | field types, annotations, structural rules            | typed instance (or `MarkdownValidationError`) |
+| `render_markdown`      | instance values + annotations                         | markdown serialization                  |
+| `parse_markdown_as`    | field types, annotations, structural rules            | typed instance (or `MarkdownValidationError`) |
 | Meta-validation hook   | class structure at definition time                    | early `MarkdownError` on malformed templates |
 | `template_fields`      | heading-introducing fields and their docstrings       | `FieldInfo(heading, description)` stream |
 | `extract_subtree`      | nested `MarkdownHeader` types                         | typed slice of a larger document        |

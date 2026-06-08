@@ -7,7 +7,7 @@ context. Quick example:
     from archetype.markdown import (
         MarkdownDocument, MarkdownHeader,
         AsHeading, TextTemplate,
-        generate_contract, validate_markdown,
+        generate_contract, parse_markdown_as,
         template_fields,
     )
 
@@ -21,7 +21,7 @@ context. Quick example:
         findings: list[Finding]
 
     template = generate_contract(Review)
-    review = validate_markdown(produced_md, Review)
+    review = parse_markdown_as(produced_md, Review)
     fields = template_fields(Review)
 """
 
@@ -41,8 +41,8 @@ from archetype.markdown.errors import (
 )
 from archetype.markdown.extractor import extract_subtree
 from archetype.markdown.introspection import FieldInfo, template_fields
-from archetype.markdown.parser import validate_markdown
-from archetype.markdown.renderer import generate_contract, render_instance
+from archetype.markdown.parser import parse_markdown_as
+from archetype.markdown.renderer import generate_contract, render_markdown
 from archetype.markdown.template_model import MarkdownDocument, MarkdownHeader
 
 __all__ = [
@@ -61,7 +61,7 @@ __all__ = [
     "TextTemplate",
     "extract_subtree",
     "generate_contract",
-    "render_instance",
+    "parse_markdown_as",
+    "render_markdown",
     "template_fields",
-    "validate_markdown",
 ]

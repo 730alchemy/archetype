@@ -13,20 +13,20 @@ from tests.archetype.markdown.fixtures.sample_models import (
 )
 
 from archetype.markdown.annotations import AsHeading
-from archetype.markdown.parser import validate_markdown
-from archetype.markdown.renderer import render_instance
+from archetype.markdown.parser import parse_markdown_as
+from archetype.markdown.renderer import render_markdown
 from archetype.markdown.template_model import MarkdownHeader
 
 
 class TestRoundTrip:
     def test_simple_header(self):
         original = SimpleHeader(heading="hello world")
-        recovered = validate_markdown(render_instance(original), SimpleHeader)
+        recovered = parse_markdown_as(render_markdown(original), SimpleHeader)
         assert recovered == original
 
     def test_header_with_summary(self):
         original = HeaderWithSummary(heading="doc title", summary="The body content here.")
-        recovered = validate_markdown(render_instance(original), HeaderWithSummary)
+        recovered = parse_markdown_as(render_markdown(original), HeaderWithSummary)
         assert recovered.heading == original.heading
         assert original.summary in recovered.summary  # serialization may add whitespace
 
@@ -39,7 +39,7 @@ class TestRoundTrip:
             rationale="TDD required.",
         )
         # Render at level 3 (as if inside a list at level 2)
-        rendered = render_instance(original, current_level=3)
+        rendered = render_markdown(original, current_level=3)
         # Need to be careful: standalone validate sees level-3 as top, but
         # parser expects level-1 top. Use extract_subtree first.
         from archetype.markdown.extractor import extract_subtree
@@ -47,7 +47,7 @@ class TestRoundTrip:
         fragment = extract_subtree(
             rendered, heading_level=3, title_match="Finding 1 - missing tests"
         )
-        recovered = validate_markdown(fragment, Finding)
+        recovered = parse_markdown_as(fragment, Finding)
         assert recovered.heading == "missing tests"
         assert recovered.code.strip() == "def foo(): pass"
         assert recovered.tags == ["a", "b"]
@@ -65,7 +65,7 @@ class TestRoundTrip:
                 Finding(heading="t2", code="c2", tags=[], description="d2", rationale="r2"),
             ],
         )
-        recovered = validate_markdown(render_instance(original), ReviewerOutput)
+        recovered = parse_markdown_as(render_markdown(original), ReviewerOutput)
         assert recovered.heading == original.heading
         assert recovered.frontmatter == original.frontmatter
         assert recovered.next_steps == original.next_steps
@@ -82,7 +82,7 @@ class TestRoundTrip:
             summary="Nothing to report.",
             findings=[],
         )
-        recovered = validate_markdown(render_instance(original), ReviewerOutput)
+        recovered = parse_markdown_as(render_markdown(original), ReviewerOutput)
         assert recovered.findings == []
         assert recovered.heading == "Empty review"
 
@@ -97,8 +97,8 @@ class TestRoundTrip:
             heading="Doc",
             details="## Sub-section\n\nNested content here.",
         )
-        rendered = render_instance(original)
-        recovered = validate_markdown(rendered, WithStructuredBody)
+        rendered = render_markdown(original)
+        recovered = parse_markdown_as(rendered, WithStructuredBody)
         # Body content survives — sub-heading text and prose both present
         assert "Sub-section" in recovered.details
         assert "Nested content here." in recovered.details
@@ -115,8 +115,8 @@ class TestRoundTrip:
             heading="Doc",
             details="## Sub-section\n\n### Sub-sub-section\n\nDeep content.",
         )
-        rendered = render_instance(original)
-        recovered = validate_markdown(rendered, WithDeepBody)
+        rendered = render_markdown(original)
+        recovered = parse_markdown_as(rendered, WithDeepBody)
         assert "## Sub-section" in recovered.details
         assert "### Sub-sub-section" in recovered.details
         assert "Deep content." in recovered.details

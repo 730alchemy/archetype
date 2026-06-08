@@ -23,8 +23,8 @@ Typed markdown documents backed by Pydantic models.
   - `AsTable` — `list[BaseModel]` rendered as a markdown table
   - `TextTemplate(template)` — format string for the heading title (`{value}`, `{ordinal}`)
 - **`generate_contract(ModelClass)`** — emit the annotated skeleton (placeholder comments)
-- **`render_instance(instance)`** — emit a populated document
-- **`validate_markdown(text, ModelClass)`** — parse markdown and return a validated instance; raises `MarkdownValidationError` with field-localized messages on failure
+- **`render_markdown(instance)`** — emit a populated document
+- **`parse_markdown_as(text, ModelClass)`** — parse markdown and return a validated instance; raises `MarkdownValidationError` with field-localized messages on failure
 - **`template_fields(ModelClass)`** — iterate `FieldInfo` entries (`.heading`, `.description`) for introspection in Jinja templates
 - **`extract_subtree(text, heading)`** — extract a named heading section from markdown text
 
@@ -41,7 +41,7 @@ Jinja-based template resolution with markdown-aware globals.
 
 **Model is the contract.** Annotations on the model class drive all behaviour. The renderer, parser, and introspection engine read `model_fields[name].metadata` at runtime — no separate config files, no code generation step.
 
-**Strict by default.** `validate_markdown` raises on any field mismatch. `resolve` raises on any undefined template variable. Silent partial results are rejected.
+**Strict by default.** `parse_markdown_as` raises on any field mismatch. `resolve` raises on any undefined template variable. Silent partial results are rejected.
 
 **No cross-cutting state.** All functions are stateless — they accept a model class or instance and return a value. No global registries, no singletons.
 
@@ -67,8 +67,8 @@ src/archetype/
   markdown/          — typed markdown documents
     annotations.py   — field annotation dataclasses
     template_model.py — MarkdownHeader, MarkdownDocument bases
-    renderer.py      — generate_contract, render_instance
-    parser.py        — validate_markdown entry point
+    renderer.py      — generate_contract, render_markdown
+    parser.py        — parse_markdown_as entry point
     extractor.py     — extract_subtree
     introspection.py — template_fields, FieldInfo
     _ast_normalizer.py — markdown-it AST → NormalizedDocument

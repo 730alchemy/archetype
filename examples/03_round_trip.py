@@ -1,4 +1,4 @@
-"""Example: Round-trip integrity — render_instance and validate_markdown are inverses.
+"""Example: Round-trip integrity — render_markdown and parse_markdown_as are inverses.
 
 A populated model instance rendered to markdown and parsed back produces an
 identical instance. The Pydantic model is a lossless codec: the same contract
@@ -21,8 +21,8 @@ from archetype.markdown import (
     MarkdownDocument,
     MarkdownHeader,
     TextTemplate,
-    render_instance,
-    validate_markdown,
+    parse_markdown_as,
+    render_markdown,
 )
 
 console = Console()
@@ -48,8 +48,8 @@ console.print(
     "\n[bold]Round-trip integrity — render and parse are inverses[/bold]\n\n"
     "[dim]Step 1:[/dim] Declare a Pydantic model that defines the markdown contract.\n"
     "[dim]Step 2:[/dim] Create a Pydantic model instance with data.\n"
-    "[dim]Step 3:[/dim] Call [cyan]render_instance()[/cyan] to produce markdown.\n"
-    "[dim]Step 4:[/dim] Call [cyan]validate_markdown()[/cyan] to parse the markdown back"
+    "[dim]Step 3:[/dim] Call [cyan]render_markdown()[/cyan] to produce markdown.\n"
+    "[dim]Step 4:[/dim] Call [cyan]parse_markdown_as()[/cyan] to parse the markdown back"
     " into a Pydantic model instance.\n"
     "[dim]Step 5:[/dim] The recovered instance is identical to the original.\n"
 )
@@ -101,7 +101,7 @@ console.print(
 
 console.input("\n[dim]Press Enter to see the rendered markdown...[/dim]")
 
-rendered = render_instance(original)
+rendered = render_markdown(original)
 
 console.print()
 console.print(Rule("rendered markdown"))
@@ -112,7 +112,7 @@ console.input(
     " and verify round-trip...[/dim]"
 )
 
-recovered = validate_markdown(rendered, FeatureSpec)
+recovered = parse_markdown_as(rendered, FeatureSpec)
 
 assert recovered == original, "Round-trip failed — instances are not equal."
 
@@ -121,9 +121,9 @@ console.print(Rule("result"))
 console.print(
     Syntax(
         "# original is the Pydantic model instance we created in step 2\n"
-        "rendered = render_instance(original)\n"
+        "rendered = render_markdown(original)\n"
         "\n"
-        "recovered = validate_markdown(rendered, FeatureSpec)\n"
+        "recovered = parse_markdown_as(rendered, FeatureSpec)\n"
         "\n"
         "recovered == original",
         "python",

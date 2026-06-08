@@ -2,7 +2,7 @@
 
 MarkdownDocument supports an optional frontmatter field typed as a Pydantic
 BaseModel. When present, it renders as a YAML block at the top of the document
-and is parsed back into the typed model by validate_markdown.
+and is parsed back into the typed model by parse_markdown_as.
 
 Frontmatter is useful for metadata that travels with the document but is not
 part of its narrative structure: author, status, version, timestamps, IDs.
@@ -25,8 +25,8 @@ from archetype.markdown import (
     MarkdownHeader,
     TextTemplate,
     generate_contract,
-    render_instance,
-    validate_markdown,
+    parse_markdown_as,
+    render_markdown,
 )
 
 console = Console()
@@ -61,9 +61,9 @@ console.print(
     "[dim]Step 2:[/dim] Declare [cyan]frontmatter: FrontmatterModel | None = None[/cyan]"
     " as the first field on a [cyan]MarkdownDocument[/cyan] subclass.\n"
     "[dim]Step 3:[/dim] Create a Pydantic model instance with data.\n"
-    "[dim]Step 4:[/dim] Call [cyan]render_instance()[/cyan] — frontmatter renders as a YAML"
+    "[dim]Step 4:[/dim] Call [cyan]render_markdown()[/cyan] — frontmatter renders as a YAML"
     " block.\n"
-    "[dim]Step 5:[/dim] Call [cyan]validate_markdown()[/cyan] to parse the markdown back into"
+    "[dim]Step 5:[/dim] Call [cyan]parse_markdown_as()[/cyan] to parse the markdown back into"
     " a Pydantic model instance — frontmatter is recovered as a typed object.\n"
 )
 console.input("[dim]Press Enter to see the model...[/dim]")
@@ -119,7 +119,7 @@ console.print(Syntax(review.model_dump_json(indent=2, exclude_none=True), "json"
 
 console.input("\n[dim]Press Enter to see the rendered markdown...[/dim]")
 
-rendered = render_instance(review)
+rendered = render_markdown(review)
 
 console.print()
 console.print(Rule("rendered markdown"))
@@ -129,7 +129,7 @@ console.input(
     "\n[dim]Press Enter to parse the markdown back into a Pydantic model instance...[/dim]"
 )
 
-recovered = validate_markdown(rendered, CodeReview)
+recovered = parse_markdown_as(rendered, CodeReview)
 
 assert recovered == review, "Round-trip failed — instances are not equal."
 
@@ -138,9 +138,9 @@ console.print(Rule("result"))
 console.print(
     Syntax(
         "# review is the Pydantic model instance we created in step 3\n"
-        "rendered = render_instance(review)\n"
+        "rendered = render_markdown(review)\n"
         "\n"
-        "recovered = validate_markdown(rendered, CodeReview)\n"
+        "recovered = parse_markdown_as(rendered, CodeReview)\n"
         "\n"
         "recovered.frontmatter.change_set   # 'cs-42'\n"
         "recovered.frontmatter.commit_range  # 'a1b2c3..d4e5f6'\n"

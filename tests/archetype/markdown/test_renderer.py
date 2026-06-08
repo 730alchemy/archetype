@@ -22,7 +22,7 @@ from archetype.markdown.annotations import (
     AsTable,
 )
 from archetype.markdown.errors import MarkdownTemplateError
-from archetype.markdown.renderer import generate_contract, render_instance
+from archetype.markdown.renderer import generate_contract, render_markdown
 from archetype.markdown.template_model import MarkdownHeader
 
 
@@ -113,7 +113,7 @@ class TestRenderHeadingIntroducingFields:
 class TestRenderInstance:
     def test_simple_header_with_summary(self):
         h = HeaderWithSummary(heading="My Doc", summary="The work is good.")
-        out = render_instance(h)
+        out = render_markdown(h)
         assert out.startswith("# My Doc")
         assert "## Summary" in out
         assert "The work is good." in out
@@ -126,7 +126,7 @@ class TestRenderInstance:
             description="No unit tests exist.",
             rationale="Project requires TDD.",
         )
-        out = render_instance(f, current_level=3)
+        out = render_markdown(f, current_level=3)
         assert "### Finding 1 - missing tests" in out
         assert "```python" in out
         assert "def foo(): pass" in out
@@ -149,7 +149,7 @@ class TestRenderInstance:
                 )
             ],
         )
-        out = render_instance(review)
+        out = render_markdown(review)
         assert out.startswith("---\n")
         assert "change_set_name: cs7" in out
         assert "# Review of cs7-plan4" in out
