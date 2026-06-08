@@ -17,7 +17,7 @@ from archetype.markdown.template_model import MarkdownDocument, MarkdownHeader
 
 
 class SimpleHeader(MarkdownHeader):
-    """The smallest possible MarkdownHeader subclass — just a title."""
+    """The smallest possible MarkdownHeader subclass — just a heading."""
 
 
 class HeaderWithSummary(MarkdownHeader):
@@ -32,7 +32,7 @@ class FindingMetadata(BaseModel):
 
 
 class Finding(MarkdownHeader):
-    """A finding: title with ordinal-prefix template, then body sections."""
+    """A finding: heading with ordinal-prefix template, then body sections."""
 
     heading: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
     code: Annotated[str, AsCodeBlock(language="python")]

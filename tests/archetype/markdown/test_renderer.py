@@ -31,7 +31,7 @@ class TestRenderTemplateSimpleHeader:
 
     def test_simple_header_emits_h1_placeholder(self):
         out = generate_contract(SimpleHeader)
-        # Top-level header at level 1; title placeholder uses field-description style.
+        # Top-level heading at level 1; heading placeholder uses field-description style.
         assert out.startswith("# ")
         assert out.endswith("\n")
 
@@ -122,7 +122,7 @@ class TestRenderHeadingIntroducingFields:
             findings: list[Finding]
 
         out = generate_contract(WithFindings)
-        # The Finding subdocument's title carries TextTemplate("Finding {ordinal} - {value}")
+        # The Finding subdocument's heading carries TextTemplate("Finding {ordinal} - {value}")
         # In skeleton form, ordinal is shown as "{ordinal}" or a literal placeholder.
         assert "Finding {ordinal}" in out or "### Finding 1" in out
 

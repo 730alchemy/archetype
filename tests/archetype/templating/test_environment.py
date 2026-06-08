@@ -74,7 +74,7 @@ class TestEnvironmentGlobalsUsable:
         tmpl = env.from_string("{{ generate_contract(Doc) }}")
         result = tmpl.render(Doc=Doc)
 
-        # Phase 1's generate_contract produces a skeleton containing the title
+        # generate_contract produces a skeleton containing the document
         # heading and section headings. We just assert the section heading
-        # appears in the output — the full shape is covered by Phase 1 tests.
+        # appears in the output — the full shape is covered by renderer tests.
         assert "Summary" in result

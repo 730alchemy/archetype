@@ -3,7 +3,7 @@ subclasses.
 
 Triggered by the __pydantic_init_subclass__ hook on MarkdownHeader. Walks the
 subclass's model_fields and enforces:
-  1. Title rule          — title:str required (inherited; not overridden to non-str)
+  1. Heading rule        — heading:str required (inherited; not overridden to non-str)
   2. Body order rule     — non-heading body fields must precede heading-introducing ones
   3. Frontmatter rule    — only on MarkdownDocument subclasses; first field; type BaseModel|None
   4. Type-compat rule    — every annotation has an allowed underlying type
@@ -53,10 +53,10 @@ def _check_heading_rule(cls: type[MarkdownHeader]) -> None:
             f"{cls.__name__} is missing required 'heading' field. "
             f"All MarkdownHeader subclasses inherit heading:str; do not delete it."
         )
-    title_field = fields["heading"]
-    if title_field.annotation is not str:
+    heading_field = fields["heading"]
+    if heading_field.annotation is not str:
         raise MarkdownTemplateError(
-            f"{cls.__name__}.heading has type {title_field.annotation!r}, "
+            f"{cls.__name__}.heading has type {heading_field.annotation!r}, "
             f"expected str. The heading field must remain a str (you may attach "
             f"annotations like TextTemplate via Annotated[str, TextTemplate(...)])."
         )
@@ -149,7 +149,7 @@ def _check_type_compatibility_rule(cls: type[MarkdownHeader]) -> None:
        AsTable         -> list[BaseModel-subclass]
        AsBulletList    -> list[str]
        AsNumberedList  -> list[str]
-       TextTemplate    -> str (title field) OR a list[MarkdownHeader-subclass] (wrapper)
+       TextTemplate    -> str (heading field) OR a list[MarkdownHeader-subclass] (wrapper)
     Mismatches raise MarkdownTemplateError naming the field, the annotation,
     and the allowed type.
     """
@@ -185,7 +185,7 @@ def _enforce_compat(cls: type, field_name: str, ann: object | None, field_type: 
         field_type, MarkdownHeader
     ):
         # TextTemplate is allowed only on:
-        #   - MarkdownHeader.title field (str) — skipped above
+        #   - MarkdownHeader.heading field (str) — skipped above
         #   - heading-introducing list-wrapper fields: list[MarkdownHeader-subclass]
         # Any other use is a definition-time error.
         _raise_compat(

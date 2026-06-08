@@ -57,7 +57,7 @@ class TestStructuralIteration:
 
 
 class TestSkeletonRendering:
-    """generate_contract() used as a Jinja global emits the Phase 1 skeleton."""
+    """generate_contract() used as a Jinja global emits the contract skeleton."""
 
     def test_generate_contract_skeleton_matches_direct_call(self):
         from archetype.markdown.renderer import generate_contract

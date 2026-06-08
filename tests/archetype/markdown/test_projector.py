@@ -14,7 +14,7 @@ from archetype.markdown.errors import MarkdownValidationError
 
 
 class TestProjectToModelSimple:
-    def test_simple_header_with_only_title(self):
+    def test_simple_header_with_only_heading(self):
         doc = normalize("# Hello\n")
         instance = project_to_model(doc, SimpleHeader)
         assert instance.heading == "Hello"

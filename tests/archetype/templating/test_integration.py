@@ -83,8 +83,8 @@ class TestRenderInstructionsIntegration:
         assert "Problem: Users can't log in." in result
         assert "- Low traffic\n- SSO available" in result
 
-        # Skeleton renderer produces body-heading structure. (Phase 1's
+        # The skeleton renderer produces body-heading structure.
         # generate_contract emits placeholder comments for unfilled slots; we
-        # just assert the body headings we annotated appear.)
+        # only assert that the annotated body headings appear.
         assert "## Problem Statement" in result
         assert "## Output skeleton" in result

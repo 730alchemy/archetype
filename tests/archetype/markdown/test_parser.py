@@ -1,4 +1,4 @@
-"""End-to-end tests for the public parse-and-validate function."""
+"""End-to-end tests for the public markdown-to-model parser."""
 
 from __future__ import annotations
 

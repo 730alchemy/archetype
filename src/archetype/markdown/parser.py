@@ -1,4 +1,4 @@
-"""Public parse-and-validate entry point."""
+"""Public markdown-to-model parsing entry point."""
 
 from __future__ import annotations
 

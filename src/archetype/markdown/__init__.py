@@ -1,7 +1,6 @@
-"""Declarative markdown-document machinery for archetype.
+"""Typed markdown documents backed by Pydantic models.
 
-See the architecture ADR and the markdown-machinery-design document for
-context. Quick example:
+Quick example:
 
     from typing import Annotated
     from archetype.markdown import (
@@ -12,11 +11,11 @@ context. Quick example:
     )
 
     class Finding(MarkdownHeader):
-        title: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
+        heading: Annotated[str, TextTemplate("Finding {ordinal} - {value}")]
         description: Annotated[str, AsHeading()]
 
     class Review(MarkdownDocument):
-        title: Annotated[str, TextTemplate("{value}")]
+        heading: Annotated[str, TextTemplate("{value}")]
         summary: Annotated[str, AsHeading()]
         findings: list[Finding]
 
