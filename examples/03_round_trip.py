@@ -47,7 +47,7 @@ class FeatureSpec(MarkdownDocument):
 console.print(
     "\n[bold]Round-trip integrity — render and parse are inverses[/bold]\n\n"
     "[dim]Step 1:[/dim] Declare a Pydantic model that defines the markdown contract.\n"
-    "[dim]Step 2:[/dim] Populate a model instance with data.\n"
+    "[dim]Step 2:[/dim] Create a model instance with data.\n"
     "[dim]Step 3:[/dim] Call [cyan]render_instance()[/cyan] to produce markdown.\n"
     "[dim]Step 4:[/dim] Call [cyan]validate_markdown()[/cyan] to parse it back.\n"
     "[dim]Step 5:[/dim] The recovered instance is identical to the original.\n"
@@ -93,7 +93,7 @@ original = FeatureSpec(
 )
 
 console.print()
-console.print(Rule("populated instance"))
+console.print(Rule("model instance"))
 console.print(
     Syntax(original.model_dump_json(indent=2, exclude_none=True), "json", theme="monokai")
 )
