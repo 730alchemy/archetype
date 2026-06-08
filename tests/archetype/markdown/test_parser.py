@@ -11,15 +11,15 @@ from tests.archetype.markdown.fixtures.sample_models import (
 )
 
 from archetype.markdown.errors import MarkdownValidationError
-from archetype.markdown.parser import validate_markdown
-from archetype.markdown.renderer import render_instance
+from archetype.markdown.parser import parse_markdown_as
+from archetype.markdown.renderer import render_markdown
 
 
 class TestValidateMarkdown:
     def test_simple_header_with_summary_round_trip(self):
         original = HeaderWithSummary(heading="Doc", summary="The work is good.")
-        rendered = render_instance(original)
-        parsed = validate_markdown(rendered, HeaderWithSummary)
+        rendered = render_markdown(original)
+        parsed = parse_markdown_as(rendered, HeaderWithSummary)
         assert parsed.heading == "Doc"
         assert "The work is good." in parsed.summary
 
@@ -39,8 +39,8 @@ class TestValidateMarkdown:
                 ),
             ],
         )
-        rendered = render_instance(original)
-        parsed = validate_markdown(rendered, ReviewerOutput)
+        rendered = render_markdown(original)
+        parsed = parse_markdown_as(rendered, ReviewerOutput)
         assert parsed.heading == "Review of cs7-plan4"
         assert parsed.frontmatter is not None
         assert parsed.frontmatter.change_set_name == "cs7"
@@ -50,12 +50,12 @@ class TestValidateMarkdown:
 
     def test_invalid_markdown_raises_validation_error(self):
         with pytest.raises(MarkdownValidationError):
-            validate_markdown("just text\n", HeaderWithSummary)
+            parse_markdown_as("just text\n", HeaderWithSummary)
 
     def test_malformed_frontmatter_yaml_raises_markdown_validation_error(self):
         bad = "---\nkey: [unclosed\n---\n\n# Doc\n\n## Summary\n\ntext\n"
         with pytest.raises(MarkdownValidationError, match=r"[Ff]rontmatter"):
-            validate_markdown(bad, HeaderWithSummary)
+            parse_markdown_as(bad, HeaderWithSummary)
 
     def test_frontmatter_schema_mismatch_raises_markdown_validation_error(self):
         # ReviewerMetadata requires both change_set_name and commit_range.
@@ -64,4 +64,4 @@ class TestValidateMarkdown:
             "---\nchange_set_name: cs7\n---\n\n# Doc\n\n1. step\n\n## Summary\n\nx\n\n## Findings\n"
         )
         with pytest.raises(MarkdownValidationError, match=r"[Ff]rontmatter"):
-            validate_markdown(bad, ReviewerOutput)
+            parse_markdown_as(bad, ReviewerOutput)

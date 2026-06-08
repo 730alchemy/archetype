@@ -21,8 +21,8 @@ class TestPublicAPI:
             TextTemplate,
             extract_subtree,
             generate_contract,
-            render_instance,
-            validate_markdown,
+            parse_markdown_as,
+            render_markdown,
         )
 
         # Existence of each symbol is the assertion.
@@ -37,8 +37,8 @@ class TestPublicAPI:
                 AsNumberedList,
                 TextTemplate,
                 generate_contract,
-                render_instance,
-                validate_markdown,
+                render_markdown,
+                parse_markdown_as,
                 extract_subtree,
                 MarkdownTemplateError,
                 MarkdownValidationError,

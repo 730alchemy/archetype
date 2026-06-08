@@ -2,7 +2,7 @@
 
 Two entry points:
   - generate_contract(model_class) -> str:  the annotated skeleton
-  - render_instance(instance)      -> str:  a populated document
+  - render_markdown(instance)      -> str:  a populated document
 
 Both walk fields in declaration order, dispatch on field role (structural vs
 annotation-driven), and emit the corresponding markdown. Heading levels are
@@ -175,7 +175,7 @@ def _guard_heading_level(model_class: type, level: int) -> None:
         )
 
 
-def render_instance(
+def render_markdown(
     instance: MarkdownHeader,
     *,
     current_level: int = 1,
@@ -278,7 +278,7 @@ def _render_body_field_instance(
     if isinstance(ann, AsTable):
         return _render_table_instance(field_type, cast(list[object], value or []))
     if isinstance(field_type, type) and issubclass(field_type, MarkdownHeader):
-        return render_instance(cast(MarkdownHeader, value), current_level=level)
+        return render_markdown(cast(MarkdownHeader, value), current_level=level)
     if get_origin(field_type) is list:
         args = get_args(field_type)
         if args and isinstance(args[0], type) and issubclass(args[0], MarkdownHeader):
@@ -290,7 +290,7 @@ def _render_body_field_instance(
                 return wrapper
             item_parts = []
             for idx, item in enumerate(items_list, start=1):
-                rendered = render_instance(item, current_level=level + 1, ordinal=idx)
+                rendered = render_markdown(item, current_level=level + 1, ordinal=idx)
                 item_parts.append(rendered)
             return wrapper + "\n\n" + "\n\n".join(item_parts)
     return ""

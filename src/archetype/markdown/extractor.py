@@ -2,7 +2,7 @@
 
 Locates a heading by level + exact text match, returns the heading's full scope
 as a markdown string with heading levels rebased so the matched heading becomes
-level 1. The result can be passed directly to validate_markdown against a
+level 1. The result can be passed directly to parse_markdown_as against a
 template model whose top heading is at level 1.
 """
 
@@ -86,7 +86,7 @@ def _rebase_heading_levels(tokens: list[Token], delta: int) -> list[Token]:
 def _render_tokens_to_markdown(tokens: list[Token]) -> str:
     """Re-serialize a token stream back to markdown text. Minimal renderer
     handling headings, paragraphs, lists, and code blocks for round-trip via
-    validate_markdown."""
+    parse_markdown_as."""
 
     parts: list[str] = []
     i = 0

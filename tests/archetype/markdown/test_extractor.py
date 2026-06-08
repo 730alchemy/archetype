@@ -54,7 +54,7 @@ class TestExtractAndValidate:
     def test_extract_finding_then_validate(self):
         from tests.archetype.markdown.fixtures.sample_models import Finding
 
-        from archetype.markdown.parser import validate_markdown
+        from archetype.markdown.parser import parse_markdown_as
 
         md = (
             "# Review\n\n"
@@ -71,7 +71,7 @@ class TestExtractAndValidate:
             "#### Rationale\n\nOther reason.\n"
         )
         fragment = extract_subtree(md, heading_level=3, title_match="Finding 1 - missing tests")
-        finding = validate_markdown(fragment, Finding)
+        finding = parse_markdown_as(fragment, Finding)
         assert finding.heading == "missing tests"
         assert finding.code.strip() == "x = 1"
         assert finding.tags == ["t1", "t2"]
