@@ -39,6 +39,9 @@ jobs:
       - name: Typecheck
         run: pdm run typecheck
 
+      - name: Audit dependencies
+        run: pdm run pip-audit
+
   test:
     runs-on: ubuntu-latest
     strategy:

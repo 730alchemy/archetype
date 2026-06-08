@@ -45,6 +45,7 @@ asyncio_mode = "strict"
 
 
 
+
 [tool.pdm]
 distribution = true
 
@@ -75,6 +76,7 @@ dev = [
     "pre-commit>=4.6.0",
     "pytest-cov>=7.1.0",
     "rich>=15.0.0",
+    "pip-audit>=2.10.0",
 ]
 
 [tool.coverage.run]
