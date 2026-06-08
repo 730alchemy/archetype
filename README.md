@@ -147,5 +147,6 @@ instructions = resolve(
 pdm install
 pdm run test
 pdm run lint
+pdm run check-format
 pdm run typecheck
 ```
