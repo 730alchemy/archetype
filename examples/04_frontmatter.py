@@ -2,7 +2,7 @@
 
 MarkdownDocument supports an optional frontmatter field typed as a Pydantic
 BaseModel. When present, it renders as a YAML block at the top of the document
-and is parsed back into the typed model on validate_markdown.
+and is parsed back into the typed model by validate_markdown.
 
 Frontmatter is useful for metadata that travels with the document but is not
 part of its narrative structure: author, status, version, timestamps, IDs.
@@ -60,8 +60,11 @@ console.print(
     "[dim]Step 1:[/dim] Define a [cyan]BaseModel[/cyan] for the frontmatter schema.\n"
     "[dim]Step 2:[/dim] Declare [cyan]frontmatter: FrontmatterModel | None = None[/cyan]"
     " as the first field on a [cyan]MarkdownDocument[/cyan] subclass.\n"
-    "[dim]Step 3:[/dim] The frontmatter renders as a YAML block and parses back to the"
-    " typed model.\n"
+    "[dim]Step 3:[/dim] Create a Pydantic model instance with data.\n"
+    "[dim]Step 4:[/dim] Call [cyan]render_instance()[/cyan] — frontmatter renders as a YAML"
+    " block.\n"
+    "[dim]Step 5:[/dim] Call [cyan]validate_markdown()[/cyan] to parse the markdown back into"
+    " a Pydantic model instance — frontmatter is recovered as a typed object.\n"
 )
 console.input("[dim]Press Enter to see the model...[/dim]")
 
@@ -83,9 +86,9 @@ console.input("\n[dim]Press Enter to see the markdown contract...[/dim]")
 
 console.print()
 console.print(Rule("markdown contract"))
-print(generate_contract(CodeReview))
+console.print(Syntax(generate_contract(CodeReview), "text", theme="monokai"))
 
-console.input("[dim]Press Enter to see a populated instance rendered to markdown...[/dim]")
+console.input("[dim]Press Enter to see the Pydantic model instance...[/dim]")
 
 review = CodeReview(
     frontmatter=ReviewMeta(
@@ -110,23 +113,45 @@ review = CodeReview(
     ],
 )
 
+console.print()
+console.print(Rule("Pydantic model instance"))
+console.print(Syntax(review.model_dump_json(indent=2, exclude_none=True), "json", theme="monokai"))
+
+console.input("\n[dim]Press Enter to see the rendered markdown...[/dim]")
+
 rendered = render_instance(review)
 
 console.print()
 console.print(Rule("rendered markdown"))
-print(rendered)
+console.print(Syntax(rendered, "text", theme="monokai"))
 
-console.input("[dim]Press Enter to parse the markdown back and verify frontmatter...[/dim]")
+console.input(
+    "\n[dim]Press Enter to parse the markdown back into a Pydantic model instance...[/dim]"
+)
 
 recovered = validate_markdown(rendered, CodeReview)
 
-console.print()
-console.print(Rule("recovered frontmatter"))
-console.print(f"[dim]change_set:[/dim]   [cyan]{recovered.frontmatter.change_set}[/cyan]")  # type: ignore[union-attr]
-console.print(f"[dim]commit_range:[/dim] [cyan]{recovered.frontmatter.commit_range}[/cyan]")  # type: ignore[union-attr]
-console.print(f"[dim]status:[/dim]       [cyan]{recovered.frontmatter.status}[/cyan]\n")  # type: ignore[union-attr]
-
 assert recovered == review, "Round-trip failed — instances are not equal."
+
+console.print()
+console.print(Rule("result"))
 console.print(
-    "[green]✓[/green] [bold]Round-trip verified.[/bold] Frontmatter parsed back to typed model.\n"
+    Syntax(
+        "# review is the Pydantic model instance we created in step 3\n"
+        "rendered = render_instance(review)\n"
+        "\n"
+        "recovered = validate_markdown(rendered, CodeReview)\n"
+        "\n"
+        "recovered.frontmatter.change_set   # 'cs-42'\n"
+        "recovered.frontmatter.commit_range  # 'a1b2c3..d4e5f6'\n"
+        "recovered.frontmatter.status        # 'approved'\n"
+        "\n"
+        "recovered == review",
+        "python",
+        theme="monokai",
+    )
+)
+console.print(
+    "\n[green]✓[/green] [bold]True[/bold] — frontmatter parsed back into a typed Pydantic"
+    " model instance.\n"
 )
